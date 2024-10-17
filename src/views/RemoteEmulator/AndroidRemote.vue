@@ -131,6 +131,9 @@ const pic = ref('高');
 const _screenMode = window.localStorage.getItem('screenMode');
 const screenMode = ref(_screenMode || 'Scrcpy'); // Scrcpy,Minicap
 const elementLoading = ref(false);
+const startRecordFlag = ref(false); // 开始录制的标识
+const recordActions = ref([]); // 录制的动作
+const endRecordLoading = ref(false); // 结束录制加载
 const isShowImg = ref(false);
 const isDriverFinish = ref(false);
 const imgUrl = ref('');
@@ -1048,11 +1051,13 @@ const mouseup = (event) => {
   if (!isFixTouch) {
     if (isPress) {
       isPress = false;
+      let msg = {
+        type: 'touch',
+        detail: 'up\n',
+      }
+      insertRecordActions(msg)
       websocket.send(
-        JSON.stringify({
-          type: 'touch',
-          detail: 'up\n',
-        })
+        JSON.stringify(msg)
       );
       inputBox.value.focus();
     }
@@ -1091,11 +1096,13 @@ const mouseleave = () => {
     isLongPress = false;
   } else if (isPress) {
     isPress = false;
+    let msg = {
+      type: 'touch',
+      detail: 'up\n',
+    }
+    insertRecordActions(msg)
     websocket.send(
-      JSON.stringify({
-        type: 'touch',
-        detail: 'up\n',
-      })
+      JSON.stringify(msg)
     );
   }
 };
@@ -1104,11 +1111,13 @@ const mousedown = (event) => {
     // 安卓高版本
     const { x, y } = getCurLocation();
     isPress = true;
+    let msg = {
+      type: 'touch',
+      detail: `down ${x} ${y}\n`,
+    }
+    insertRecordActions(msg)
     websocket.send(
-      JSON.stringify({
-        type: 'touch',
-        detail: `down ${x} ${y}\n`,
-      })
+      JSON.stringify(msg)
     );
   } else {
     const { x, y } = getCurLocationForAdb();
@@ -1137,11 +1146,13 @@ const mousemove = (event) => {
         mouseMoveTime++;
       } else {
         const { x, y } = getCurLocation();
+        let msg = {
+          type: 'touch',
+          detail: `move ${x} ${y}\n`,
+        }
+        insertRecordActions(msg)
         websocket.send(
-          JSON.stringify({
-            type: 'touch',
-            detail: `move ${x} ${y}\n`,
-          })
+          JSON.stringify(msg)
         );
         mouseMoveTime = 0;
       }
@@ -1597,6 +1608,39 @@ const install = (apk) => {
     });
   }
 };
+const startRecord = () => {
+  startRecordFlag.value = true
+}
+
+const endRecord = () => {
+  startRecordFlag.value = false
+  if(recordActions.value.length > 0){
+    console.log(JSON.stringify(recordActions.value))
+    endRecordLoading.value = true;
+    // todo: 调后端接口写入数据库
+    axios.post('/controller/testCases/saveRecordActions', recordActions.value).then((resp) => {
+      endRecordLoading.value = false;
+      if (resp.code === 2000) {
+        console.log(JSON.stringify(recordActions.value))
+      }
+    }).catch(error => {
+      console.error(error);
+      endRecordLoading.value = false;
+    });
+    recordActions.value = [];
+  }
+}
+
+// recordActions
+const insertRecordActions = (data) => {
+
+  if(startRecordFlag.value){
+    recordActions.value.push(data)
+    console.log(JSON.stringify(recordActions.value))
+
+  }
+}
+
 const getElement = () => {
   elementLoading.value = true;
   setImgData();
@@ -4294,6 +4338,699 @@ const checkAlive = () => {
               @start-perfmon="startPerfmon"
               @stop-perfmon="stopPerfmon"
             />
+          </el-tab-pane>
+          <!--录制坐标-->
+          <el-tab-pane :label="$t('androidRemoteTS.code.recordPoint')" name="recordAction">
+            <el-tabs stretch type="border-card">
+              <el-tab-pane :label="$t('androidRemoteTS.code.nativeControls')">
+                <div v-show="isShowImg">
+                  <div
+                    style="
+                      margin-bottom: 15px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: space-between;
+                    "
+                  >
+                    <div>
+                      <el-select v-model="isMultiWindows" size="mini">
+                        <el-option
+                          :label="$t('androidRemoteTS.element.windows.single')"
+                          :value="false"
+                        />
+                        <el-option
+                          :label="$t('androidRemoteTS.element.windows.multi')"
+                          :value="true"
+                        />
+                      </el-select>
+                      <el-select
+                        v-model="isVisible"
+                        style="margin-left: 10px"
+                        size="mini"
+                      >
+                        <el-option
+                          :label="$t('androidRemoteTS.element.visible.hid')"
+                          :value="false"
+                        />
+                        <el-option
+                          :label="$t('androidRemoteTS.element.visible.show')"
+                          :value="true"
+                        />
+                      </el-select>
+                      <el-select
+                        v-model="isIgnore"
+                        style="margin-left: 10px"
+                        size="mini"
+                      >
+                        <el-option
+                          :label="
+                            $t('androidRemoteTS.element.unimportant.ignore')
+                          "
+                          :value="true"
+                        />
+                        <el-option
+                          :label="
+                            $t('androidRemoteTS.element.unimportant.show')
+                          "
+                          :value="false"
+                        />
+                      </el-select>
+                      <el-button
+                        style="margin-left: 10px"
+                        type="primary"
+                        size="mini"
+                        :loading="elementLoading"
+                        :disabled="isDriverFinish === false"
+                        @click="getElement"
+                      >
+                        <el-icon :size="12" style="vertical-align: middle">
+                          <Search />
+                        </el-icon>
+                        {{ $t('androidRemoteTS.code.retrieveControlEle') }}
+                      </el-button>
+                    </div>
+                    <span
+                      v-if="activity.length > 0"
+                      style="
+                        margin-right: 10px;
+                        color: #909399;
+                        font-size: 14px;
+                        cursor: pointer;
+                      "
+                      @click="copy(activity)"
+                    >{{ $t('androidRemoteTS.code.activity') }}：
+                      {{ activity }}</span
+                    >
+                  </div>
+                  <el-row :gutter="10">
+                    <el-col :span="7">
+                      <el-card shadow="hover">
+                        <div
+                          :style="
+                            'width: 100%;background-image: url(' +
+                            imgUrl +
+                            ');background-size: 100% 100%;'
+                          "
+                        >
+                          <canvas
+                            id="debugPic"
+                            @mousedown="touchstart"
+                          ></canvas>
+                        </div>
+                      </el-card>
+                      <el-card
+                        v-if="webViewData.length > 0"
+                        :body-style="{ padding: '12px' }"
+                        shadow="hover"
+                        style="margin-top: 10px"
+                      >
+                        <el-table :data="webViewData" border>
+                          <el-table-column
+                            :label="$t('androidRemoteTS.code.webViewList')"
+                            align="center"
+                            :show-overflow-tooltip="true"
+                          >
+                            <template #default="scope">
+                              <span
+                                style="cursor: pointer"
+                                @click="copy(scope.row)"
+                              >
+                                {{ scope.row }}</span
+                              >
+                            </template>
+                          </el-table-column>
+                        </el-table>
+                      </el-card>
+                    </el-col>
+                    <el-col :span="9">
+                      <el-card v-if="isShowTree" shadow="hover">
+                        <el-input
+                          v-model="filterText"
+                          style="margin-bottom: 10px"
+                          size="mini"
+                          :placeholder="$t('androidRemoteTS.code.classFilter')"
+                        ></el-input>
+                        <div style="height: 660px">
+                          <el-scrollbar
+                            class="element-tree-scrollbar"
+                            style="height: 100%"
+                          >
+                            <el-tree
+                              ref="tree"
+                              :indent="13"
+                              :filter-node-method="filterNode"
+                              :default-expanded-keys="currentId"
+                              node-key="id"
+                              style="margin-top: 10px; margin-bottom: 20px"
+                              :highlight-current="true"
+                              :accordion="true"
+                              :data="elementData"
+                              @node-click="handleNodeClick"
+                            >
+                              <template #default="{ node, data }">
+                                <span
+                                  v-if="data.detail['resource-id']"
+                                  style="font-size: 14px"
+                                >
+                                  {{
+                                    node.label.substring(
+                                      0,
+                                      node.label.indexOf('>')
+                                    ) + ' '
+                                  }}
+                                  <span style="color: #f55781">resource-id</span
+                                  >={{
+                                    '"' + data.detail['resource-id'] + '">'
+                                  }}
+                                </span>
+                                <span v-else style="font-size: 14px">{{
+                                    node.label
+                                  }}</span>
+                              </template>
+                            </el-tree>
+                          </el-scrollbar>
+                        </div>
+                      </el-card>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-card v-if="isShowTree" shadow="hover">
+                        <div style="height: 695px; padding-bottom: 60px">
+                          <div
+                            v-if="project && project['id']"
+                            style="text-align: center; margin-bottom: 10px"
+                          >
+                            <el-button
+                              :disabled="elementDetail === null"
+                              plain
+                              size="small"
+                              type="primary"
+                              round
+                              @click="toAddElement('', '')"
+                            >{{ $t('androidRemoteTS.code.addControls') }}
+                            </el-button>
+                            <el-button
+                              v-if="
+                                elementDetail &&
+                                elementDetail['xpath'] &&
+                                isDriverFinish
+                              "
+                              :loading="elementScreenLoading"
+                              style="margin-left: 5px"
+                              plain
+                              size="small"
+                              round
+                              @click="getEleScreen(elementDetail['xpath'])"
+                            >{{ $t('androidRemoteTS.code.controlSnapshot') }}
+                            </el-button>
+                          </div>
+                          <div v-else>
+                            <el-alert
+                              style="margin-bottom: 10px"
+                              :title="$t('androidRemoteTS.code.titleMessage')"
+                              type="info"
+                              show-icon
+                              close-text="Get!"
+                            />
+                            <el-select
+                              v-model="project"
+                              style="width: 100%"
+                              size="mini"
+                              value-key="id"
+                              :placeholder="
+                                $t('androidRemoteTS.code.chooseProject')
+                              "
+                            >
+                              <el-option
+                                v-for="item in store.state.projectList"
+                                :key="item.id"
+                                :value="item"
+                                :label="item['projectName']"
+                              >
+                                <div style="display: flex; align-items: center">
+                                  <el-avatar
+                                    style="margin-right: 10px"
+                                    :size="32"
+                                    :src="
+                                      item['projectImg'].length > 0
+                                        ? item['projectImg']
+                                        : defaultLogo
+                                    "
+                                    shape="square"
+                                  ></el-avatar>
+                                  {{ item['projectName'] }}
+                                </div>
+                              </el-option>
+                            </el-select>
+                          </div>
+                          <el-scrollbar
+                            style="height: 100%"
+                            class="element-tree-scrollbar"
+                          >
+                            <el-form
+                              v-if="elementDetail !== null"
+                              label-position="left"
+                              class="element-table"
+                              label-width="100px"
+                            >
+                              <el-form-item
+                                label="class"
+                                style="cursor: pointer"
+                                @click="copy(elementDetail['class'])"
+                              >
+                                <span>{{ elementDetail['class'] }}</span>
+                              </el-form-item>
+                              <el-form-item
+                                v-if="elementDetail['resource-id']"
+                                label="resource-id"
+                                style="cursor: pointer"
+                              >
+                                <span
+                                  @click="copy(elementDetail['resource-id'])"
+                                >{{ elementDetail['resource-id'] }}</span
+                                >
+                                <el-icon
+                                  color="green"
+                                  size="16"
+                                  style="
+                                    vertical-align: middle;
+                                    margin-left: 10px;
+                                    cursor: pointer;
+                                  "
+                                  @click="
+                                    checkLocation({
+                                      eleType: 'id',
+                                      eleValue: elementDetail['resource-id'],
+                                    })
+                                  "
+                                >
+                                  <Location />
+                                </el-icon>
+                                <el-icon
+                                  v-if="project && project['id']"
+                                  color="green"
+                                  size="16"
+                                  style="
+                                    vertical-align: middle;
+                                    margin-left: 10px;
+                                    cursor: pointer;
+                                  "
+                                  @click="
+                                    toAddElement(
+                                      'id',
+                                      elementDetail['resource-id']
+                                    )
+                                  "
+                                >
+                                  <Pointer />
+                                </el-icon>
+                              </el-form-item>
+                              <el-form-item
+                                :label="$t('androidRemoteTS.code.xpath')"
+                              >
+                                <el-table
+                                  stripe
+                                  :empty-text="
+                                    $t('androidRemoteTS.code.xpathNull')
+                                  "
+                                  border
+                                  :data="findBestXpath(elementDetail)"
+                                  :show-header="false"
+                                >
+                                  <el-table-column>
+                                    <template #default="scope">
+                                      <span
+                                        style="cursor: pointer"
+                                        @click="copy(scope.row)"
+                                      >{{ scope.row }}</span
+                                      >
+                                      <el-icon
+                                        color="green"
+                                        size="16"
+                                        style="
+                                          vertical-align: middle;
+                                          margin-left: 10px;
+                                          cursor: pointer;
+                                        "
+                                        @click="
+                                          checkLocation({
+                                            eleType: 'xpath',
+                                            eleValue: scope.row,
+                                          })
+                                        "
+                                      >
+                                        <Location />
+                                      </el-icon>
+                                      <el-icon
+                                        v-if="project && project['id']"
+                                        color="green"
+                                        size="16"
+                                        style="
+                                          vertical-align: middle;
+                                          margin-left: 10px;
+                                          cursor: pointer;
+                                        "
+                                        @click="
+                                          toAddElement('xpath', scope.row)
+                                        "
+                                      >
+                                        <Pointer />
+                                      </el-icon>
+                                    </template>
+                                  </el-table-column>
+                                </el-table>
+                              </el-form-item>
+                              <el-form-item
+                                :label="$t('androidRemoteTS.code.absolutePath')"
+                                style="cursor: pointer"
+                              >
+                                <span @click="copy(elementDetail['xpath'])">{{
+                                    elementDetail['xpath']
+                                  }}</span>
+                                <el-icon
+                                  color="green"
+                                  size="16"
+                                  style="
+                                    vertical-align: middle;
+                                    margin-left: 10px;
+                                    cursor: pointer;
+                                  "
+                                  @click="
+                                    checkLocation({
+                                      eleType: 'xpath',
+                                      eleValue: elementDetail['xpath'],
+                                    })
+                                  "
+                                >
+                                  <Location />
+                                </el-icon>
+                                <el-icon
+                                  v-if="project && project['id']"
+                                  color="green"
+                                  size="16"
+                                  style="
+                                    vertical-align: middle;
+                                    margin-left: 10px;
+                                    cursor: pointer;
+                                  "
+                                  @click="
+                                    toAddElement(
+                                      'xpath',
+                                      elementDetail['xpath']
+                                    )
+                                  "
+                                >
+                                  <Pointer />
+                                </el-icon>
+                              </el-form-item>
+                              <el-form-item
+                                label="text"
+                                style="cursor: pointer"
+                                @click="copy(elementDetail['text'])"
+                              >
+                                <span>{{ elementDetail['text'] }}</span>
+                              </el-form-item>
+                              <el-form-item
+                                v-if="elementDetail['content-desc']"
+                                label="content-desc"
+                                style="cursor: pointer"
+                              >
+                                <span
+                                  @click="copy(elementDetail['content-desc'])"
+                                >{{ elementDetail['content-desc'] }}</span
+                                >
+                                <el-icon
+                                  color="green"
+                                  size="16"
+                                  style="
+                                    vertical-align: middle;
+                                    margin-left: 10px;
+                                    cursor: pointer;
+                                  "
+                                  @click="
+                                    checkLocation({
+                                      eleType: 'accessibilityId',
+                                      eleValue: elementDetail['content-desc'],
+                                    })
+                                  "
+                                >
+                                  <Location />
+                                </el-icon>
+                                <el-icon
+                                  v-if="project && project['id']"
+                                  color="green"
+                                  size="16"
+                                  style="
+                                    vertical-align: middle;
+                                    margin-left: 10px;
+                                    cursor: pointer;
+                                  "
+                                  @click="
+                                    toAddElement(
+                                      'accessibilityId',
+                                      elementDetail['content-desc']
+                                    )
+                                  "
+                                >
+                                  <Pointer />
+                                </el-icon>
+                              </el-form-item>
+                              <el-form-item
+                                label="package"
+                                style="cursor: pointer"
+                                @click="copy(elementDetail['package'])"
+                              >
+                                <span>{{ elementDetail['package'] }}</span>
+                              </el-form-item>
+                              <el-form-item
+                                :label="$t('androidRemoteTS.code.centerXY')"
+                                style="cursor: pointer"
+                              >
+                                <span
+                                  @click="
+                                    copy(
+                                      computedCenter(
+                                        elementDetail['bStart'],
+                                        elementDetail['bEnd']
+                                      )
+                                    )
+                                  "
+                                >{{
+                                    computedCenter(
+                                      elementDetail['bStart'],
+                                      elementDetail['bEnd']
+                                    )
+                                  }}</span
+                                >
+                                <el-icon
+                                  color="green"
+                                  size="16"
+                                  style="
+                                    vertical-align: middle;
+                                    margin-left: 10px;
+                                    cursor: pointer;
+                                  "
+                                  @click="
+                                    checkLocation({
+                                      eleType: 'point',
+                                      eleValue: computedCenter(
+                                        elementDetail['x'],
+                                        elementDetail['y'],
+                                        elementDetail['width'],
+                                        elementDetail['height']
+                                      ),
+                                    })
+                                  "
+                                >
+                                  <Location />
+                                </el-icon>
+                                <el-icon
+                                  v-if="project && project['id']"
+                                  color="green"
+                                  size="16"
+                                  style="
+                                    vertical-align: middle;
+                                    margin-left: 10px;
+                                    cursor: pointer;
+                                  "
+                                  @click="
+                                    toAddElement(
+                                      'point',
+                                      computedCenter(
+                                        elementDetail['bStart'],
+                                        elementDetail['bEnd']
+                                      )
+                                    )
+                                  "
+                                >
+                                  <Pointer />
+                                </el-icon>
+                              </el-form-item>
+                              <el-form-item label="index">
+                                <span>{{ elementDetail['index'] }}</span>
+                              </el-form-item>
+                              <el-form-item
+                                :label="
+                                  $t('androidRemoteTS.code.label.checkable')
+                                "
+                              >
+                                <el-switch
+                                  :value="
+                                    JSON.parse(elementDetail['checkable'])
+                                  "
+                                  disabled
+                                >
+                                </el-switch>
+                              </el-form-item>
+                              <el-form-item
+                                :label="
+                                  $t('androidRemoteTS.code.label.checked')
+                                "
+                              >
+                                <el-switch
+                                  :value="JSON.parse(elementDetail['checked'])"
+                                  disabled
+                                >
+                                </el-switch>
+                              </el-form-item>
+                              <el-form-item
+                                :label="
+                                  $t('androidRemoteTS.code.label.clickable')
+                                "
+                              >
+                                <el-switch
+                                  :value="
+                                    JSON.parse(elementDetail['clickable'])
+                                  "
+                                  disabled
+                                >
+                                </el-switch>
+                              </el-form-item>
+                              <el-form-item
+                                :label="
+                                  $t('androidRemoteTS.code.label.selected')
+                                "
+                              >
+                                <el-switch
+                                  :value="JSON.parse(elementDetail['selected'])"
+                                  disabled
+                                >
+                                </el-switch>
+                              </el-form-item>
+                              <el-form-item
+                                :label="
+                                  $t('androidRemoteTS.code.label.displayed')
+                                "
+                              >
+                                <el-switch
+                                  :value="
+                                    JSON.parse(elementDetail['displayed'])
+                                  "
+                                  disabled
+                                >
+                                </el-switch>
+                              </el-form-item>
+                              <el-form-item
+                                :label="
+                                  $t('androidRemoteTS.code.label.enabled')
+                                "
+                              >
+                                <el-switch
+                                  :value="JSON.parse(elementDetail['enabled'])"
+                                  disabled
+                                >
+                                </el-switch>
+                              </el-form-item>
+                              <el-form-item
+                                :label="
+                                  $t('androidRemoteTS.code.label.focusable')
+                                "
+                              >
+                                <el-switch
+                                  :value="
+                                    JSON.parse(elementDetail['focusable'])
+                                  "
+                                  disabled
+                                >
+                                </el-switch>
+                              </el-form-item>
+                              <el-form-item
+                                :label="
+                                  $t('androidRemoteTS.code.label.focused')
+                                "
+                              >
+                                <el-switch
+                                  :value="JSON.parse(elementDetail['focused'])"
+                                  disabled
+                                >
+                                </el-switch>
+                              </el-form-item>
+                              <el-form-item
+                                :label="
+                                  $t('androidRemoteTS.code.label.longClickable')
+                                "
+                              >
+                                <el-switch
+                                  :value="
+                                    JSON.parse(elementDetail['long-clickable'])
+                                  "
+                                  disabled
+                                >
+                                </el-switch>
+                              </el-form-item>
+                              <el-form-item
+                                :label="
+                                  $t('androidRemoteTS.code.label.scrollable')
+                                "
+                              >
+                                <el-switch
+                                  :value="
+                                    JSON.parse(elementDetail['scrollable'])
+                                  "
+                                  disabled
+                                >
+                                </el-switch>
+                              </el-form-item>
+                              <el-form-item label="Bounds">
+                                <span>{{ elementDetail['bounds'] }}</span>
+                              </el-form-item>
+                            </el-form>
+                          </el-scrollbar>
+                        </div>
+                      </el-card>
+                    </el-col>
+                  </el-row>
+                </div>
+                <el-card v-show="!isShowImg" style="height: 100%">
+                  <el-result
+                    icon="info"
+                    :title="$t('androidRemoteTS.code.hintText')"
+                    :sub-title="$t('androidRemoteTS.code.recordHintText')"
+                  >
+                    <template #extra>
+                      <el-button
+                        size="mini"
+                        type="primary"
+                        :disabled = "startRecordFlag === false"
+                        @click="endRecord"
+                      >{{ $t('androidRemoteTS.code.endRecord') }}
+                      </el-button>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        :disabled = "startRecordFlag === true"
+                        :loading = "startRecordFlag === true"
+                        @click="startRecord"
+                      >
+                        <el-icon :size="12" style="vertical-align: middle">
+                          <Search />
+                        </el-icon>
+                        {{ $t('androidRemoteTS.code.startRecord') }}
+                      </el-button>
+                    </template>
+                  </el-result>
+                </el-card>
+              </el-tab-pane>
+            </el-tabs>
           </el-tab-pane>
         </el-tabs>
       </el-col>

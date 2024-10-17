@@ -912,7 +912,10 @@ const androidRemoteTS = {
       scrollable: 'scrollable',
     },
     subTitleText: '请先获取控件元素，该功能需要初始化Driver',
+    recordHintText: '请在准备好后，点击开始录制',
     getEle: '获取控件元素',
+    startRecord: '开始录制',
+    endRecord: '结束录制',
     poco: 'Poco控件',
     getPoco: '获取Poco控件',
     pocoSDK: 'Poco-SDK 接入指南',
@@ -930,6 +933,8 @@ const androidRemoteTS = {
       messageInfo: '如果您的浏览器不兼容该功能，请您及时反馈到',
       here: '这里',
     },
+    recordElement: '录制元素',
+    recordPoint: '录制坐标',
   },
 };
 const indexIOSTS = {

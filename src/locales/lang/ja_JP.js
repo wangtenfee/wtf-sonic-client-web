@@ -871,6 +871,8 @@ const androidRemoteTS = {
       messageInfo: '如果您的浏览器不兼容该功能，请您及时反馈到',
       here: '这里',
     },
+    recordElement: '录制元素',
+    recordPoint: '录制坐标',
   },
 };
 const indexIOSTS = {
