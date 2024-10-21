@@ -218,19 +218,21 @@ onMounted(() => {
     ></step-update>
   </el-dialog>
   <div style="margin-bottom: 10px; text-align: center">
-    <el-button-group>
+    <el-button-group >
       <el-button
         v-if="isShowRun"
         type="success"
         size="mini"
         :disabled="!isDriverFinish && steps.length > 0"
         @click="runStep"
+        style="margin-right: 10px"
       >
         {{ $t('steps.run') }}
       </el-button>
-      <el-button type="primary" size="mini" @click="addStep">{{
+      <el-button type="primary" size="mini" @click="addStep" style="margin-right: 10px">{{
         $t('pubSteps.addStep')
       }}</el-button>
+      <el-button type="primary" size="mini" @click="flush" style="margin-right: 10px">刷新</el-button>
     </el-button-group>
   </div>
   <!-- 第一层所有步骤的parentId都是0 -->

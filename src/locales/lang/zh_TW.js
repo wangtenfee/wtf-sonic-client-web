@@ -854,6 +854,8 @@ const androidRemoteTS = {
     recordHintText: '请在准备好后，点击开始录制',
     getEle: '獲取控件元素',
     startRecord: '开始录制',
+    pauseRecord: '暂停录制',
+    continueRecord: '继续录制',
     endRecord: '结束录制',
     poco: 'Poco控件',
     getPoco: '獲取Poco控件',
