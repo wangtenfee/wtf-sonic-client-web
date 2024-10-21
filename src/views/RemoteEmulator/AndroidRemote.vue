@@ -1400,7 +1400,7 @@ const runStep = () => {
   );
 };
 const runStepRecord = () => {
-  debugLoadingRecord.value = true;
+  debugLoading.value = true;
   activeTab2Record.value = "log";
   websocket.send(
     JSON.stringify({
@@ -4562,7 +4562,7 @@ const checkAlive = () => {
                   >
                     <step-log
                       :is-read-only="false"
-                      :debug-loading="debugLoadingRecord"
+                      :debug-loading="debugLoading"
                       :step-log="stepLog"
                       @clear-log="clearLog"
                       @stop-step="stopStep"
