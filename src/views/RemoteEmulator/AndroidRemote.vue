@@ -101,6 +101,7 @@ const iFrameHeight = ref(0);
 const terminalHeight = ref(0);
 const caseList = ref(null);
 const caseListRecord = ref(null);
+const caseListRecordEle = ref(null);
 const loading = ref(false);
 const driverLoading = ref(false);
 const remoteAdbLoading = ref(true);
@@ -133,8 +134,12 @@ const _screenMode = window.localStorage.getItem("screenMode");
 const screenMode = ref(_screenMode || "Scrcpy"); // Scrcpy,Minicap
 const elementLoading = ref(false);
 const startRecordFlag = ref(false); // 开始录制的标识
+const startRecordEleFlag = ref(false); // 开始录制的标识
+const recordEleType = ref(0); // 录制的类型
 const recordActions = ref([]); // 录制的动作
+const recordEleArr = ref([]); // 录制的动作
 const endRecordLoading = ref(false); // 结束录制加载
+const endRecordEleLoading = ref(false); // 结束录制加载
 const isShowImg = ref(false);
 const isDriverFinish = ref(false);
 const flushStep = ref(0);
@@ -150,15 +155,19 @@ const currentId = ref([]);
 const filterText = ref("");
 const project = ref(null);
 const projectRecord = ref(null);
+const projectRecordEle = ref(null);
 const testCase = ref({});
 const testCaseRecord = ref({});
+const testCaseRecordEle = ref({});
 const activeTab = ref("main");
 const activeTab2 = ref("step");
 const activeTab2Record = ref("step");
+const activeTab2RecordEle = ref("step");
 const stepLog = ref([]);
 const stepLogRecord = ref([]);
 const debugLoading = ref(false);
 const debugLoadingRecord = ref(false);
+const debugLoadingRecordEle = ref(false);
 const checkElementLoading = ref(false);
 const dialogElement = ref(false);
 const dialogImgElement = ref(false);
@@ -332,6 +341,7 @@ const fixOri = () => {
 const switchIsWebView = () => {
   isWebView.value = true;
 };
+// UI自动化里的选择测试用例
 const selectCase = (val) => {
   ElMessage.success({
     message: $t("androidRemoteTS.associationSuccess")
@@ -339,17 +349,33 @@ const selectCase = (val) => {
   testCase.value = val;
 };
 
+// 录制坐标里 选择测试用例
 const selectCaseRecord = (val) => {
   ElMessage.success({
     message: $t("androidRemoteTS.associationSuccess")
   });
   testCaseRecord.value = val;
 };
+
+// 录制元素里 选择测试用例
+const selectCaseRecordEle = (val) => {
+  ElMessage.success({
+    message: $t("androidRemoteTS.associationSuccess")
+  });
+  testCaseRecordEle.value = val;
+};
+
+// 取消 UI自动化里的用例关联
 const removeCase = () => {
   testCase.value = {};
 };
+// 取消 录制坐标中的用例关联
 const removeCaseRecord = () => {
   testCaseRecord.value = {};
+};
+// 取消 录制元素中的用例关联
+const removeCaseRecordEle = () => {
+  testCaseRecordEle.value = {};
 };
 const getImg = (name) => {
   let result;
@@ -821,10 +847,12 @@ const websocketOnmessage = (message) => {
       }
       break;
     }
+    // 重新获取元素
     case "tree": {
-      ElMessage.success({
-        message: $t("androidRemoteTS.getEle.success")
-      });
+      // 弹出 获取原生控件元素成功
+      // ElMessage.success({
+      //   message: $t("androidRemoteTS.getEle.success")
+      // });
       const result = JSON.parse(message.data);
       currentId.value = [1];
       elementData.value = result.detail;
@@ -1125,7 +1153,16 @@ const mouseleave = () => {
     );
   }
 };
+const mousedown2 = () => {
+  mousedown();
+  setTimeout(() => {
+    getElement();
+  }, 1500);
+
+};
 const mousedown = (event) => {
+  // alert("qwerqwerqwer")
+  // console.error("qwerqwerqwer")
   if (!isFixTouch) {
     // 安卓高版本
     const { x, y } = getCurLocation();
@@ -1135,9 +1172,12 @@ const mousedown = (event) => {
       detail: `down ${x} ${y}\n`
     };
     insertRecordActions(msg);
+
     websocket.send(
       JSON.stringify(msg)
     );
+
+    // alert(x +"adfasdf" +y)
   } else {
     const { x, y } = getCurLocationForAdb();
     moveX = x;
@@ -1179,10 +1219,12 @@ const mousemove = (event) => {
   }
 };
 const touchstart = async (event) => {
+  // alert(JSON.stringify(event))
   const debugPic = document.getElementById("debugPic");
   const rect = debugPic.getBoundingClientRect();
   let x;
   let y;
+
   if (directionStatus.value === 0 || directionStatus.value === 180) {
     x = parseInt(
       (event.clientX - rect.left) * (imgWidth / debugPic.clientWidth)
@@ -1198,6 +1240,7 @@ const touchstart = async (event) => {
       (event.clientY - rect.top) * (imgWidth / debugPic.clientHeight)
     );
   }
+  // alert(x + "wtf"+y)
   await nextTick(() => {
     tree.value.setCurrentKey(
       findMinSize(findElementByPoint(elementData.value, x, y))
@@ -1411,16 +1454,45 @@ const runStepRecord = () => {
     })
   );
 };
-const checkLocation = (data) => {
-  checkElementLoading.value = true;
+
+const runStepRecordEle = () => {
+  debugLoading.value = true;
+  activeTab2RecordEle.value = "log";
   websocket.send(
     JSON.stringify({
       type: "debug",
-      detail: "checkLocation",
-      element: data.eleValue,
-      eleType: data.eleType,
+      detail: "runStep",
+      caseId: testCaseRecordEle.value.id,
       pwd: device.value.password
     })
+  );
+};
+// 运行元素后 2秒后，触发 重新获取控件元素
+const checkLocation = (data) => {
+  checkLocation2(data);
+  setTimeout(() => {
+    getElement();
+  }, 2000);
+};
+// 运行元素
+const checkLocation2 = (data) => {
+  let v = {
+    type: "debug",
+    detail: "checkLocation",
+    element: data.eleValue,
+    eleType: data.eleType,
+    pwd: device.value.password
+  };
+
+  if (recordEleType.value == 1 || recordEleType.value == 2) {
+    recordEleArr.value.push(v);
+    if (recordEleType.value == 2) {
+      endRecordEle();
+    }
+  }
+  checkElementLoading.value = true;
+  websocket.send(
+    JSON.stringify(v)
   );
 };
 const stopStep = () => {
@@ -1654,10 +1726,12 @@ const install = (apk) => {
     });
   }
 };
+// 开始录制坐标
 const startRecord = () => {
   startRecordFlag.value = true;
 };
 
+// 结束录制坐标
 const endRecord = () => {
   startRecordFlag.value = false;
   if (recordActions.value.length > 0) {
@@ -1684,7 +1758,7 @@ const endRecord = () => {
   console.error("flushStep.value {}", flushStep);
 };
 
-// recordActions
+// recordActions 把用例的操作插入到坐标数组
 const insertRecordActions = (data) => {
 
   if (startRecordFlag.value) {
@@ -1694,6 +1768,49 @@ const insertRecordActions = (data) => {
   }
 };
 
+// 开始录制元素
+const startRecordEle = () => {
+  startRecordEleFlag.value = true;
+};
+
+// 结束录制元素
+const endRecordEle = () => {
+  if (recordEleArr.value.length > 0) {
+    console.log(JSON.stringify(recordEleArr.value));
+    endRecordEleLoading.value = true;
+    let para = {
+      "elements": recordEleArr.value,
+      "testCaseId": testCaseRecordEle.value.id,
+      "projectId": projectRecordEle.value.id
+    };
+    // todo: 后端增加接口 解析录制的元素
+    axios.post("/controller/testCases/saveRecordElements", para).then((resp) => {
+      endRecordEleLoading.value = false;
+      if (resp.code === 2000) {
+        console.log(JSON.stringify(recordEleArr.value));
+      }
+      flushStep.value++;
+    }).catch(error => {
+      console.error(error);
+      endRecordEleLoading.value = false;
+    });
+    recordEleArr.value = [];
+  }
+
+  console.error("flushStep.value {}", flushStep);
+};
+
+// recordActions 把用例的操作插入到坐标数组
+const insertRecordActionsEle = (data) => {
+
+  if (startRecordEleFlag.value) {
+    recordEleArr.value.push(data);
+    console.log(JSON.stringify(recordEleArr.value));
+
+  }
+};
+
+// 重新获取控件元素 方法
 const getElement = () => {
   elementLoading.value = true;
   setImgData();
@@ -2044,6 +2161,7 @@ const checkAlive = () => {
             </div>
           </template>
           <div style="margin-right: 40px; text-align: center">
+            <!--            在sonic里点击手机上的屏幕 -->
             <div>
               <input
                 ref="inputBox"
@@ -2064,7 +2182,7 @@ const checkAlive = () => {
                 muted
                 @mouseup="mouseup"
                 @mousemove="mousemove"
-                @mousedown="mousedown"
+                @mousedown="mousedown2"
                 @mouseleave="mouseleave"
               />
               <canvas
@@ -3379,6 +3497,7 @@ const checkAlive = () => {
                       </el-button>
                     </div>
                   </template>
+
                   <el-descriptions :column="2" size="medium" border>
                     <el-descriptions-item
                       width="100px"
@@ -3521,6 +3640,7 @@ const checkAlive = () => {
               >
                 {{ $t("androidRemoteTS.code.addCase") }}
               </el-button>
+              <!--              用例列表 -->
               <test-case-list
                 v-if="project !== null"
                 ref="caseList"
@@ -3539,7 +3659,609 @@ const checkAlive = () => {
               </el-card>
             </div>
           </el-tab-pane>
-          <el-tab-pane :label="$t('routes.controlElement')" name="ele">
+          <!--          网页调试-->
+          <el-tab-pane
+            :label="$t('androidRemoteTS.code.webView.webDebug')"
+            name="webview"
+          >
+            <div v-if="isWebView">
+              <div v-if="webViewListDetail.length == 0">
+                <el-result
+                  icon="info"
+                  :title="$t('androidRemoteTS.code.hintText')"
+                  :sub-title="$t('androidRemoteTS.code.webView.err')"
+                >
+                  <template #extra>
+                    <el-button
+                      type="primary"
+                      size="mini"
+                      :loading="webViewLoading"
+                      @click="getWebViewForward"
+                    >
+                      <el-icon :size="12" style="vertical-align: middle">
+                        <Search />
+                      </el-icon>
+                      {{ $t("androidRemoteTS.code.webView.getWeb") }}
+                    </el-button>
+                  </template>
+                </el-result>
+              </div>
+              <div v-else>
+                <el-button
+                  :loading="webViewLoading"
+                  type="primary"
+                  size="mini"
+                  @click="getWebViewForward"
+                >
+                  {{ $t("androidRemoteTS.code.webView.againGetWeb") }}
+                </el-button>
+                <el-card
+                  v-for="web in webViewListDetail"
+                  style="margin-top: 15px"
+                  class="device-card"
+                  :body-style="{ padding: '0px 10px 10px 10px' }"
+                >
+                  <template #header>
+                    <div>
+                      <div style="display: flex; align-items: center">
+                        <img :src="getImg('chrome')" width="20" />
+                        <strong style="margin-left: 10px"
+                        >{{ web["package"] }} ({{ web["version"] }})</strong
+                        >
+                      </div>
+                    </div>
+                  </template>
+                  <el-card
+                    v-for="w in web.children"
+                    :body-style="{ padding: '15px' }"
+                    style="
+                      margin-top: 10px;
+                      word-wrap: break-word;
+                      overflow: hidden;
+                    "
+                  >
+                    <div
+                      style="
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                      "
+                    >
+                      <div>
+                        <div style="display: flex; align-items: center">
+                          <img
+                            v-if="w.favicon"
+                            :src="w.favicon"
+                            width="15"
+                            style="margin-right: 5px"
+                          />
+                          <strong>{{
+                              w.title.length > 0
+                                ? w.title
+                                : $t("androidRemoteTS.code.webView.Untitled")
+                            }}</strong>
+                        </div>
+                        <div style="color: #909399">
+                          {{
+                            w.url.length > 50
+                              ? w.url.substring(0, 50) + "..."
+                              : w.url
+                          }}
+                        </div>
+                      </div>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        @click="
+                          tabWebView(
+                            web.port,
+                            w.id,
+                            w.title.length > 0
+                              ? w.title
+                              : $t('androidRemoteTS.code.webView.Untitled')
+                          )
+                        "
+                      >
+                        {{ $t("androidRemoteTS.code.webView.nowDebug") }}
+                      </el-button>
+                    </div>
+                  </el-card>
+                </el-card>
+              </div>
+            </div>
+            <div v-else>
+              <div style="display: flex; align-items: center">
+                <el-page-header
+                  icon="el-icon-arrow-left"
+                  @back="switchIsWebView"
+                >
+                  <template #title>
+                    <span style="color: #606266">{{
+                        $t("androidRemoteTS.code.webView.return")
+                      }}</span>
+                  </template>
+                  <template #content>
+                    {{ $t("androidRemoteTS.code.webView.nowWeb") }}：<strong>{{
+                      title
+                    }}</strong>
+                  </template>
+                </el-page-header>
+              </div>
+              <iframe
+                v-if="!isWebView"
+                allow="clipboard-read;clipboard-write"
+                :style="
+                  'border:1px solid #C0C4CC;;width: 100%;height: ' +
+                  iFrameHeight +
+                  'px;margin-top:15px'
+                "
+                :src="iframeUrl"
+              >
+              </iframe>
+            </div>
+          </el-tab-pane>
+          <!--          性能监控-->
+          <el-tab-pane :label="$t('IOSRemote.perfmon')" name="perfmon">
+            <android-perf
+              ref="androidPerfRef"
+              :app-list="appList"
+              @start-perfmon="startPerfmon"
+              @stop-perfmon="stopPerfmon"
+            />
+          </el-tab-pane>
+          <!--录制坐标-->
+          <el-tab-pane :label="$t('androidRemoteTS.code.recordPoint')" name="recordAction">
+            <div v-if="testCaseRecord['id']">
+              <el-collapse accordion style="margin-bottom: 20px">
+                <el-collapse-item>
+                  <template #title>
+                    <div
+                      style="
+                        display: flex;
+                        align-items: center;
+                        width: 100%;
+                        justify-content: space-between;
+                      "
+                    >
+                      <strong
+                        style="
+                          font-size: 15px;
+                          color: #909399;
+                          margin-left: 10px;
+                        "
+                      >{{
+                          $t("androidRemoteTS.code.UIAutomation.testInfo")
+                        }}</strong
+                      >
+                      <!--录制相关动作,录制相关BUTTON-->
+                      <div style="display: flex; margin-top: 10px">
+                        <el-button
+                          type="success"
+                          size="mini"
+                          :disabled="startRecordFlag === true"
+                          :loading="startRecordFlag === true"
+                          @click="startRecord"
+                        >
+                          {{ $t("androidRemoteTS.code.startRecord") }}
+                        </el-button>
+                        <el-button
+                          size="mini"
+                          type="danger"
+                          :disabled="startRecordFlag === false"
+                          @click="endRecord"
+                        >{{ $t("androidRemoteTS.code.endRecord") }}
+                        </el-button>
+                      </div>
+
+                      <el-button
+                        style="margin-right: 10px"
+                        type="danger"
+                        size="mini"
+                        @click="removeCaseRecord"
+                      >
+                        {{ $t("androidRemoteTS.code.UIAutomation.clean") }}
+                      </el-button>
+                    </div>
+                  </template>
+                  <el-descriptions :column="2" size="medium" border>
+                    <el-descriptions-item
+                      width="100px"
+                      :label="$t('projectIndexTS.page.caseId')"
+                    >{{ testCaseRecord["id"] }}
+                    </el-descriptions-item>
+                    <el-descriptions-item
+                      width="100px"
+                      :label="$t('projectIndexTS.page.caseName')"
+                    >{{ testCaseRecord.name }}
+                    </el-descriptions-item>
+                    <el-descriptions-item
+                      :label="
+                        $t('androidRemoteTS.code.UIAutomation.fatherPlayed')
+                      "
+                    >
+                      <div style="display: flex; align-items: center">
+                        <el-avatar
+                          style="margin-right: 10px"
+                          :size="27"
+                          :src="
+                            projectRecord['projectImg'].length > 0
+                              ? projectRecord['projectImg']
+                              : defaultLogo
+                          "
+                          shape="square"
+                        ></el-avatar>
+                        {{ projectRecord["projectName"] }}
+                      </div>
+                    </el-descriptions-item>
+                    <el-descriptions-item
+                      :label="$t('stepListViewTS.platformToBe')"
+                    >
+                      <div style="display: flex; align-items: center">
+                        <el-avatar
+                          style="margin-right: 10px"
+                          :size="27"
+                          :src="
+                            getImg(
+                              testCaseRecord['platform'] === 1 ? 'ANDROID' : 'IOS'
+                            )
+                          "
+                          shape="square"
+                        ></el-avatar>
+                        {{
+                          testCaseRecord["platform"] === 1
+                            ? $t("publicStepTS.android")
+                            : "iOS"
+                        }}
+                      </div>
+                    </el-descriptions-item>
+                    <el-descriptions-item :label="$t('stepListViewTS.module')">
+                      {{
+                        testCaseRecord["modulesDTO"] !== null
+                          ? testCaseRecord["modulesDTO"].name
+                          : ""
+                      }}
+                    </el-descriptions-item>
+                    <el-descriptions-item
+                      :label="$t('stepListViewTS.versionName')"
+                    >{{ testCaseRecord["version"] }}
+                    </el-descriptions-item>
+                    <el-descriptions-item :label="$t('stepListViewTS.designer')"
+                    >{{ testCaseRecord["designer"] }}
+                    </el-descriptions-item>
+                    <el-descriptions-item :label="$t('stepListViewTS.last')"
+                    >{{ testCaseRecord["editTime"] }}
+                    </el-descriptions-item>
+                    <el-descriptions-item
+                      :label="$t('stepListViewTS.testMessage')"
+                    >{{ testCaseRecord["des"] }}
+                    </el-descriptions-item>
+                  </el-descriptions>
+                </el-collapse-item>
+              </el-collapse>
+              <el-card>
+
+                <el-tabs v-model="activeTab2Record" type="border-card" stretch>
+                  <!--用例详情 -->
+                  <el-tab-pane :label="$t('publicStepTS.list')" name="step">
+                    <step-list
+                      :key="flushStep"
+                      :is-show-run="true"
+                      :platform="1"
+                      :is-driver-finish="true"
+                      :case-id="testCaseRecord['id']"
+                      :project-id="projectRecord['id']"
+                      :debug-loading="debugLoadingRecord"
+                      @run-step="runStepRecord"
+                    />
+                  </el-tab-pane>
+                  <el-tab-pane
+                    :label="$t('resultDetailTS.page.runLog')"
+                    name="log"
+                  >
+                    <step-log
+                      :is-read-only="false"
+                      :debug-loading="debugLoading"
+                      :step-log="stepLog"
+                      @clear-log="clearLog"
+                      @stop-step="stopStep"
+                    />
+                  </el-tab-pane>
+                </el-tabs>
+              </el-card>
+            </div>
+            <div v-else>
+              <span style="color: #909399; margin-right: 10px">{{
+                  $t("androidRemoteTS.code.associatedProject")
+                }}</span>
+              <el-select
+                v-model="projectRecord"
+                size="mini"
+                value-key="id"
+                :placeholder="$t('androidRemoteTS.code.chooseProject')"
+              >
+                <el-option
+                  v-for="item in store.state.projectList"
+                  :key="item.id"
+                  :value="item"
+                  :label="item['projectName']"
+                >
+                  <div style="display: flex; align-items: center">
+                    <el-avatar
+                      style="margin-right: 10px"
+                      :size="32"
+                      :src="
+                        item['projectImg'].length > 0
+                          ? item['projectImg']
+                          : defaultLogo
+                      "
+                      shape="square"
+                    ></el-avatar>
+                    {{ item["projectName"] }}
+                  </div>
+                </el-option>
+              </el-select>
+              <el-button
+                v-if="projectRecord !== null"
+                size="mini"
+                type="primary"
+                round
+                style="position: absolute; right: 20px"
+                @click="caseListRecord.open()"
+              >
+                {{ $t("androidRemoteTS.code.addCase") }}
+              </el-button>
+              <test-case-list
+                v-if="projectRecord !== null"
+                ref="caseListRecord"
+                :project-id="projectRecord['id']"
+                :platform="1"
+                :is-read-only="true"
+                @select-case="selectCaseRecord"
+              ></test-case-list>
+              <el-card style="height: 100%; margin-top: 20px">
+                <el-result
+                  icon="info"
+                  :title="$t('androidRemoteTS.code.hintText')"
+                  :sub-title="$t('androidRemoteTS.code.hintMessage')"
+                >
+                </el-result>
+              </el-card>
+            </div>
+
+          </el-tab-pane>
+          <!--          原控件元素 现在的 录制元素-->
+          <el-tab-pane :label="$t('routes.recordElement')" name="ele">
+            <div v-if="testCaseRecordEle['id']">
+              <el-collapse accordion style="margin-bottom: 20px">
+                <el-collapse-item>
+                  <template #title>
+                    <div
+                      style="
+                        display: flex;
+                        align-items: center;
+                        width: 100%;
+                        justify-content: space-between;
+                      "
+                    >
+                      <strong
+                        style="
+                          font-size: 15px;
+                          color: #909399;
+                          margin-left: 10px;
+                        "
+                      >{{
+                          $t("androidRemoteTS.code.UIAutomation.testInfo")
+                        }}</strong
+                      >
+                      <!--录制相关动作,录制相关BUTTON-->
+                      <div style="display: flex; margin-top: 10px;margin-bottom: 10px">
+                        <el-radio-group v-model="recordEleType" @change="endRecordEle"
+                                        style="margin-top: 10px;margin-left: 10px"
+                        >
+                          <el-radio  label="0" border>
+                            {{ $t("androidRemoteTS.code.recordTypeDisable") }}
+                          </el-radio>
+                          <el-radio  label="1" border>
+                            {{ $t("androidRemoteTS.code.recordTypeAuto") }}
+                          </el-radio>
+                          <el-radio  label="2" border>
+                            {{ $t("androidRemoteTS.code.recordTypeWithChoose") }}
+                          </el-radio>
+                        </el-radio-group>
+                        <!--                        <el-button
+                                                  type="success"
+                                                  size="mini"
+                                                  :disabled="startRecordEleFlag === true"
+                                                  :loading="startRecordEleFlag === true"
+                                                  @click="startRecordEle"
+                                                >
+                                                  {{ $t("androidRemoteTS.code.startRecord") }}
+                                                </el-button>
+                                                <el-button
+                                                  size="mini"
+                                                  type="danger"
+                                                  :disabled="startRecordEleFlag === false"
+                                                  @click="endRecordEle"
+                                                >{{ $t("androidRemoteTS.code.endRecord") }}
+                                                </el-button>-->
+
+                      </div>
+                      <el-button
+                        size="mini"
+                        type="danger"
+                        @click="endRecordEle"
+                      >{{ $t("androidRemoteTS.code.endRecord") }}
+                      </el-button>
+                      <el-button
+                        style="margin-right: 10px"
+                        type="danger"
+                        size="mini"
+                        @click="removeCaseRecordEle"
+                      >
+                        {{ $t("androidRemoteTS.code.UIAutomation.clean") }}
+                      </el-button>
+                    </div>
+                  </template>
+                  <el-descriptions :column="2" size="medium" border>
+                    <el-descriptions-item
+                      width="100px"
+                      :label="$t('projectIndexTS.page.caseId')"
+                    >{{ testCaseRecordEle["id"] }}
+                    </el-descriptions-item>
+                    <el-descriptions-item
+                      width="100px"
+                      :label="$t('projectIndexTS.page.caseName')"
+                    >{{ testCaseRecordEle.name }}
+                    </el-descriptions-item>
+                    <el-descriptions-item
+                      :label="
+                        $t('androidRemoteTS.code.UIAutomation.fatherPlayed')
+                      "
+                    >
+                      <div style="display: flex; align-items: center">
+                        <el-avatar
+                          style="margin-right: 10px"
+                          :size="27"
+                          :src="
+                            projectRecordEle['projectImg'].length > 0
+                              ? projectRecordEle['projectImg']
+                              : defaultLogo
+                          "
+                          shape="square"
+                        ></el-avatar>
+                        {{ projectRecordEle["projectName"] }}
+                      </div>
+                    </el-descriptions-item>
+                    <el-descriptions-item
+                      :label="$t('stepListViewTS.platformToBe')"
+                    >
+                      <div style="display: flex; align-items: center">
+                        <el-avatar
+                          style="margin-right: 10px"
+                          :size="27"
+                          :src="
+                            getImg(
+                              testCaseRecordEle['platform'] === 1 ? 'ANDROID' : 'IOS'
+                            )
+                          "
+                          shape="square"
+                        ></el-avatar>
+                        {{
+                          testCaseRecordEle["platform"] === 1
+                            ? $t("publicStepTS.android")
+                            : "iOS"
+                        }}
+                      </div>
+                    </el-descriptions-item>
+                    <el-descriptions-item :label="$t('stepListViewTS.module')">
+                      {{
+                        testCaseRecordEle["modulesDTO"] !== null
+                          ? testCaseRecordEle["modulesDTO"].name
+                          : ""
+                      }}
+                    </el-descriptions-item>
+                    <el-descriptions-item
+                      :label="$t('stepListViewTS.versionName')"
+                    >{{ testCaseRecordEle["version"] }}
+                    </el-descriptions-item>
+                    <el-descriptions-item :label="$t('stepListViewTS.designer')"
+                    >{{ testCaseRecordEle["designer"] }}
+                    </el-descriptions-item>
+                    <el-descriptions-item :label="$t('stepListViewTS.last')"
+                    >{{ testCaseRecordEle["editTime"] }}
+                    </el-descriptions-item>
+                    <el-descriptions-item
+                      :label="$t('stepListViewTS.testMessage')"
+                    >{{ testCaseRecordEle["des"] }}
+                    </el-descriptions-item>
+                  </el-descriptions>
+                </el-collapse-item>
+              </el-collapse>
+              <!--              <el-card>
+                              &lt;!&ndash;用例详情 &ndash;&gt;
+                              <el-tabs v-model="activeTab2Record" type="border-card" stretch>
+                                <el-tab-pane :label="$t('publicStepTS.list')" name="step">
+                                  <step-list
+                                    :key="flushStep"
+                                    :is-show-run="true"
+                                    :platform="1"
+                                    :is-driver-finish="true"
+                                    :case-id="testCaseRecord['id']"
+                                    :project-id="projectRecord['id']"
+                                    :debug-loading="debugLoadingRecord"
+                                    @run-step="runStepRecord"
+                                  />
+                                </el-tab-pane>
+                                <el-tab-pane
+                                  :label="$t('resultDetailTS.page.runLog')"
+                                  name="log"
+                                >
+                                  <step-log
+                                    :is-read-only="false"
+                                    :debug-loading="debugLoading"
+                                    :step-log="stepLog"
+                                    @clear-log="clearLog"
+                                    @stop-step="stopStep"
+                                  />
+                                </el-tab-pane>
+                              </el-tabs>
+                            </el-card>-->
+            </div>
+            <!--            控件元素 关联项目 关联用例 -->
+            <div v-else style=" margin-bottom: 10px">
+              <span style="color: #909399; margin-right: 10px">{{
+                  $t("androidRemoteTS.code.associatedProject")
+                }}</span>
+              <el-select
+                v-model="projectRecordEle"
+                size="mini"
+                value-key="id"
+                :placeholder="$t('androidRemoteTS.code.chooseProject')"
+              >
+                <el-option
+                  v-for="item in store.state.projectList"
+                  :key="item.id"
+                  :value="item"
+                  :label="item['projectName']"
+                >
+                  <div style="display: flex; align-items: center">
+                    <el-avatar
+                      style="margin-right: 10px"
+                      :size="32"
+                      :src="
+                        item['projectImg'].length > 0
+                          ? item['projectImg']
+                          : defaultLogo
+                      "
+                      shape="square"
+                    ></el-avatar>
+                    {{ item["projectName"] }}
+                  </div>
+                </el-option>
+              </el-select>
+              <span style="color: #909399; margin-left: 10px">{{
+                  $t("androidRemoteTS.code.associatedProjectRecordHintText")
+                }}</span>
+              <el-button
+                v-if="projectRecordEle !== null"
+                size="mini"
+                type="primary"
+                round
+                style="position: absolute; right: 20px"
+                @click="caseListRecordEle.open()"
+              >
+                {{ $t("androidRemoteTS.code.addCase") }}
+              </el-button>
+              <test-case-list
+                v-if="projectRecordEle !== null"
+                ref="caseListRecordEle"
+                :project-id="projectRecordEle['id']"
+                :platform="1"
+                :is-read-only="true"
+                @select-case="selectCaseRecordEle"
+              ></test-case-list>
+            </div>
+            <!--            原生控件 Poco控件-->
             <el-tabs stretch type="border-card">
               <el-tab-pane :label="$t('androidRemoteTS.code.nativeControls')">
                 <div v-show="isShowImg">
@@ -3594,6 +4316,7 @@ const checkAlive = () => {
                           :value="false"
                         />
                       </el-select>
+                      <!--                      重新获取控件元素-->
                       <el-button
                         style="margin-left: 10px"
                         type="primary"
@@ -3608,6 +4331,7 @@ const checkAlive = () => {
                         {{ $t("androidRemoteTS.code.retrieveControlEle") }}
                       </el-button>
                     </div>
+                    <!--                    当前activity-->
                     <span
                       v-if="activity.length > 0"
                       style="
@@ -3623,6 +4347,7 @@ const checkAlive = () => {
                   </div>
                   <el-row :gutter="10">
                     <el-col :span="7">
+                      <!--                      下面这个框是 原生控件  里的 -->
                       <el-card shadow="hover">
                         <div
                           :style="
@@ -3637,6 +4362,7 @@ const checkAlive = () => {
                           ></canvas>
                         </div>
                       </el-card>
+                      <!--                      webview列表 -->
                       <el-card
                         v-if="webViewData.length > 0"
                         :body-style="{ padding: '12px' }"
@@ -3798,6 +4524,7 @@ const checkAlive = () => {
                               >
                                 <span>{{ elementDetail["class"] }}</span>
                               </el-form-item>
+                              <!--                              resource-id-->
                               <el-form-item
                                 v-if="elementDetail['resource-id']"
                                 label="resource-id"
@@ -3843,6 +4570,7 @@ const checkAlive = () => {
                                   <Pointer />
                                 </el-icon>
                               </el-form-item>
+                              <!--                              xpath推荐 -->
                               <el-form-item
                                 :label="$t('androidRemoteTS.code.xpath')"
                               >
@@ -3898,6 +4626,7 @@ const checkAlive = () => {
                                   </el-table-column>
                                 </el-table>
                               </el-form-item>
+                              <!--                              绝对路径 -->
                               <el-form-item
                                 :label="$t('androidRemoteTS.code.absolutePath')"
                                 style="cursor: pointer"
@@ -4243,317 +4972,21 @@ const checkAlive = () => {
                 />
               </el-tab-pane>
             </el-tabs>
-          </el-tab-pane>
-          <el-tab-pane
-            :label="$t('androidRemoteTS.code.webView.webDebug')"
-            name="webview"
-          >
-            <div v-if="isWebView">
-              <div v-if="webViewListDetail.length == 0">
-                <el-result
-                  icon="info"
-                  :title="$t('androidRemoteTS.code.hintText')"
-                  :sub-title="$t('androidRemoteTS.code.webView.err')"
-                >
-                  <template #extra>
-                    <el-button
-                      type="primary"
-                      size="mini"
-                      :loading="webViewLoading"
-                      @click="getWebViewForward"
-                    >
-                      <el-icon :size="12" style="vertical-align: middle">
-                        <Search />
-                      </el-icon>
-                      {{ $t("androidRemoteTS.code.webView.getWeb") }}
-                    </el-button>
-                  </template>
-                </el-result>
-              </div>
-              <div v-else>
-                <el-button
-                  :loading="webViewLoading"
-                  type="primary"
-                  size="mini"
-                  @click="getWebViewForward"
-                >
-                  {{ $t("androidRemoteTS.code.webView.againGetWeb") }}
-                </el-button>
-                <el-card
-                  v-for="web in webViewListDetail"
-                  style="margin-top: 15px"
-                  class="device-card"
-                  :body-style="{ padding: '0px 10px 10px 10px' }"
-                >
-                  <template #header>
-                    <div>
-                      <div style="display: flex; align-items: center">
-                        <img :src="getImg('chrome')" width="20" />
-                        <strong style="margin-left: 10px"
-                        >{{ web["package"] }} ({{ web["version"] }})</strong
-                        >
-                      </div>
-                    </div>
-                  </template>
-                  <el-card
-                    v-for="w in web.children"
-                    :body-style="{ padding: '15px' }"
-                    style="
-                      margin-top: 10px;
-                      word-wrap: break-word;
-                      overflow: hidden;
-                    "
-                  >
-                    <div
-                      style="
-                        display: flex;
-                        align-items: center;
-                        justify-content: space-between;
-                      "
-                    >
-                      <div>
-                        <div style="display: flex; align-items: center">
-                          <img
-                            v-if="w.favicon"
-                            :src="w.favicon"
-                            width="15"
-                            style="margin-right: 5px"
-                          />
-                          <strong>{{
-                              w.title.length > 0
-                                ? w.title
-                                : $t("androidRemoteTS.code.webView.Untitled")
-                            }}</strong>
-                        </div>
-                        <div style="color: #909399">
-                          {{
-                            w.url.length > 50
-                              ? w.url.substring(0, 50) + "..."
-                              : w.url
-                          }}
-                        </div>
-                      </div>
-                      <el-button
-                        type="primary"
-                        size="mini"
-                        @click="
-                          tabWebView(
-                            web.port,
-                            w.id,
-                            w.title.length > 0
-                              ? w.title
-                              : $t('androidRemoteTS.code.webView.Untitled')
-                          )
-                        "
-                      >
-                        {{ $t("androidRemoteTS.code.webView.nowDebug") }}
-                      </el-button>
-                    </div>
-                  </el-card>
-                </el-card>
-              </div>
-            </div>
-            <div v-else>
-              <div style="display: flex; align-items: center">
-                <el-page-header
-                  icon="el-icon-arrow-left"
-                  @back="switchIsWebView"
-                >
-                  <template #title>
-                    <span style="color: #606266">{{
-                        $t("androidRemoteTS.code.webView.return")
-                      }}</span>
-                  </template>
-                  <template #content>
-                    {{ $t("androidRemoteTS.code.webView.nowWeb") }}：<strong>{{
-                      title
-                    }}</strong>
-                  </template>
-                </el-page-header>
-              </div>
-              <iframe
-                v-if="!isWebView"
-                allow="clipboard-read;clipboard-write"
-                :style="
-                  'border:1px solid #C0C4CC;;width: 100%;height: ' +
-                  iFrameHeight +
-                  'px;margin-top:15px'
-                "
-                :src="iframeUrl"
-              >
-              </iframe>
-            </div>
-          </el-tab-pane>
-          <el-tab-pane :label="$t('IOSRemote.perfmon')" name="perfmon">
-            <android-perf
-              ref="androidPerfRef"
-              :app-list="appList"
-              @start-perfmon="startPerfmon"
-              @stop-perfmon="stopPerfmon"
-            />
-          </el-tab-pane>
-          <!--录制坐标-->
-          <el-tab-pane :label="$t('androidRemoteTS.code.recordPoint')" name="recordAction">
-            <div v-if="testCaseRecord['id']">
-              <el-collapse accordion style="margin-bottom: 20px">
-                <el-collapse-item>
-                  <template #title>
-                    <div
-                      style="
-                        display: flex;
-                        align-items: center;
-                        width: 100%;
-                        justify-content: space-between;
-                      "
-                    >
-                      <strong
-                        style="
-                          font-size: 15px;
-                          color: #909399;
-                          margin-left: 10px;
-                        "
-                      >{{
-                          $t("androidRemoteTS.code.UIAutomation.testInfo")
-                        }}</strong
-                      >
-                      <!--录制相关动作,录制相关BUTTON-->
-                      <div style="display: flex; margin-top: 10px">
-                        <el-button
-                          type="success"
-                          size="mini"
-                          :disabled="startRecordFlag === true"
-                          :loading="startRecordFlag === true"
-                          @click="startRecord"
-                        >
-                          {{ $t("androidRemoteTS.code.startRecord") }}
-                        </el-button>
-
-                        <!--                        <el-button
-                                                  type="warning"
-                                                  size="mini"
-                                                  :disabled="startRecordFlag === false"
-                                                  @click="endRecord"
-                                                >
-                                                  {{ $t("androidRemoteTS.code.pauseRecord") }}
-                                                </el-button>
-
-                                                <el-button
-                                                  type="primary"
-                                                  size="mini"
-                                                  :disabled="startRecordFlag === false"
-                                                  @click="startRecord"
-                                                >
-                                                  {{ $t("androidRemoteTS.code.continueRecord") }}
-                                                </el-button>-->
-
-                        <el-button
-                          size="mini"
-                          type="danger"
-                          :disabled="startRecordFlag === false"
-                          @click="endRecord"
-                        >{{ $t("androidRemoteTS.code.endRecord") }}
-                        </el-button>
-                      </div>
-
-                      <el-button
-                        style="margin-right: 10px"
-                        type="danger"
-                        size="mini"
-                        @click="removeCaseRecord"
-                      >
-                        {{ $t("androidRemoteTS.code.UIAutomation.clean") }}
-                      </el-button>
-                    </div>
-                  </template>
-                  <el-descriptions :column="2" size="medium" border>
-                    <el-descriptions-item
-                      width="100px"
-                      :label="$t('projectIndexTS.page.caseId')"
-                    >{{ testCaseRecord["id"] }}
-                    </el-descriptions-item>
-                    <el-descriptions-item
-                      width="100px"
-                      :label="$t('projectIndexTS.page.caseName')"
-                    >{{ testCaseRecord.name }}
-                    </el-descriptions-item>
-                    <el-descriptions-item
-                      :label="
-                        $t('androidRemoteTS.code.UIAutomation.fatherPlayed')
-                      "
-                    >
-                      <div style="display: flex; align-items: center">
-                        <el-avatar
-                          style="margin-right: 10px"
-                          :size="27"
-                          :src="
-                            projectRecord['projectImg'].length > 0
-                              ? projectRecord['projectImg']
-                              : defaultLogo
-                          "
-                          shape="square"
-                        ></el-avatar>
-                        {{ projectRecord["projectName"] }}
-                      </div>
-                    </el-descriptions-item>
-                    <el-descriptions-item
-                      :label="$t('stepListViewTS.platformToBe')"
-                    >
-                      <div style="display: flex; align-items: center">
-                        <el-avatar
-                          style="margin-right: 10px"
-                          :size="27"
-                          :src="
-                            getImg(
-                              testCaseRecord['platform'] === 1 ? 'ANDROID' : 'IOS'
-                            )
-                          "
-                          shape="square"
-                        ></el-avatar>
-                        {{
-                          testCaseRecord["platform"] === 1
-                            ? $t("publicStepTS.android")
-                            : "iOS"
-                        }}
-                      </div>
-                    </el-descriptions-item>
-                    <el-descriptions-item :label="$t('stepListViewTS.module')">
-                      {{
-                        testCaseRecord["modulesDTO"] !== null
-                          ? testCaseRecord["modulesDTO"].name
-                          : ""
-                      }}
-                    </el-descriptions-item>
-                    <el-descriptions-item
-                      :label="$t('stepListViewTS.versionName')"
-                    >{{ testCaseRecord["version"] }}
-                    </el-descriptions-item>
-                    <el-descriptions-item :label="$t('stepListViewTS.designer')"
-                    >{{ testCaseRecord["designer"] }}
-                    </el-descriptions-item>
-                    <el-descriptions-item :label="$t('stepListViewTS.last')"
-                    >{{ testCaseRecord["editTime"] }}
-                    </el-descriptions-item>
-                    <el-descriptions-item
-                      :label="$t('stepListViewTS.testMessage')"
-                    >{{ testCaseRecord["des"] }}
-                    </el-descriptions-item>
-                  </el-descriptions>
-                </el-collapse-item>
-              </el-collapse>
+            <!--            录制元素里的 用例详情展示-->
+            <div v-if="testCaseRecordEle['id']">
               <el-card>
-
-                <el-tabs v-model="activeTab2Record" type="border-card" stretch>
-                  <!--用例详情 -->
+                <!--用例详情 -->
+                <el-tabs v-model="activeTab2RecordEle" type="border-card" stretch>
                   <el-tab-pane :label="$t('publicStepTS.list')" name="step">
                     <step-list
                       :key="flushStep"
                       :is-show-run="true"
                       :platform="1"
                       :is-driver-finish="true"
-                      :case-id="testCaseRecord['id']"
-                      :project-id="projectRecord['id']"
-                      :debug-loading="debugLoadingRecord"
-                      @run-step="runStepRecord"
+                      :case-id="testCaseRecordEle['id']"
+                      :project-id="projectRecordEle['id']"
+                      :debug-loading="debugLoadingRecordEle"
+                      @run-step="runStepRecordEle"
                     />
                   </el-tab-pane>
                   <el-tab-pane
@@ -4571,65 +5004,6 @@ const checkAlive = () => {
                 </el-tabs>
               </el-card>
             </div>
-            <div v-else>
-              <span style="color: #909399; margin-right: 10px">{{
-                  $t("androidRemoteTS.code.associatedProject")
-                }}</span>
-              <el-select
-                v-model="projectRecord"
-                size="mini"
-                value-key="id"
-                :placeholder="$t('androidRemoteTS.code.chooseProject')"
-              >
-                <el-option
-                  v-for="item in store.state.projectList"
-                  :key="item.id"
-                  :value="item"
-                  :label="item['projectName']"
-                >
-                  <div style="display: flex; align-items: center">
-                    <el-avatar
-                      style="margin-right: 10px"
-                      :size="32"
-                      :src="
-                        item['projectImg'].length > 0
-                          ? item['projectImg']
-                          : defaultLogo
-                      "
-                      shape="square"
-                    ></el-avatar>
-                    {{ item["projectName"] }}
-                  </div>
-                </el-option>
-              </el-select>
-              <el-button
-                v-if="projectRecord !== null"
-                size="mini"
-                type="primary"
-                round
-                style="position: absolute; right: 20px"
-                @click="caseListRecord.open()"
-              >
-                {{ $t("androidRemoteTS.code.addCase") }}
-              </el-button>
-              <test-case-list
-                v-if="projectRecord !== null"
-                ref="caseListRecord"
-                :project-id="projectRecord['id']"
-                :platform="1"
-                :is-read-only="true"
-                @select-case="selectCaseRecord"
-              ></test-case-list>
-              <el-card style="height: 100%; margin-top: 20px">
-                <el-result
-                  icon="info"
-                  :title="$t('androidRemoteTS.code.hintText')"
-                  :sub-title="$t('androidRemoteTS.code.hintMessage')"
-                >
-                </el-result>
-              </el-card>
-            </div>
-
           </el-tab-pane>
         </el-tabs>
       </el-col>

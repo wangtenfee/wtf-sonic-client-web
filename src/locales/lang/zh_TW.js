@@ -363,6 +363,7 @@ const routes = {
   reportDetails: '報告詳情',
   publicSteps: '公共步驟',
   controlElement: '控件元素',
+  recordElement: '录制元素',
   globalParameter: '全域參數',
   moduleManage: '模組管理',
   versionIteration: '版本反覆運算',

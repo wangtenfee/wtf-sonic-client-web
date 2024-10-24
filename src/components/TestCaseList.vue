@@ -17,7 +17,7 @@ const props = defineProps({
 });
 const router = useRouter();
 const pageData = ref({});
-const pageSize = ref(15);
+const pageSize = ref(10);
 const pageCurrNum = ref(1);
 const name = ref('');
 const caseId = ref(0);
