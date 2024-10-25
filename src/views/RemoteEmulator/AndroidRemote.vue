@@ -154,8 +154,11 @@ const tree = ref(null);
 const currentId = ref([]);
 const filterText = ref("");
 const project = ref(null);
+const modules = ref([]);
 const projectRecord = ref(null);
+const moduleRecord = ref(null);
 const projectRecordEle = ref(null);
+const moduleRecordEle = ref(null);
 const testCase = ref({});
 const testCaseRecord = ref({});
 const testCaseRecordEle = ref({});
@@ -364,6 +367,19 @@ const selectCaseRecordEle = (val) => {
   });
   testCaseRecordEle.value = val;
 };
+// 根据projectId获取项目的模块
+const getModule = (id) => {
+  alert(id);
+  axios
+    .get("/controller/modules/list", {
+      params: {
+        projectId: id
+      }
+    })
+    .then((resp) => {
+      modules.value = resp.data;
+    });
+};
 
 // 取消 UI自动化里的用例关联
 const removeCase = () => {
@@ -413,7 +429,10 @@ const filterNode = (value, data) => {
       : false)
   );
 };
+// 该方法 根据 elementDetail 组装 xpath推荐, 绝对路径等数据
+// todo: 这里重复调用了很多次，其实可以只调用一次，提高 性能
 const findBestXpath = (elementDetail) => {
+  // alert(JSON.stringify(elementDetail))
   const result = [];
   if (elementDetail["resource-id"]) {
     result.push(
@@ -1240,13 +1259,14 @@ const touchstart = async (event) => {
       (event.clientY - rect.top) * (imgWidth / debugPic.clientHeight)
     );
   }
-  // alert(x + "wtf"+y)
+  //
   await nextTick(() => {
     tree.value.setCurrentKey(
       findMinSize(findElementByPoint(elementData.value, x, y))
     );
   });
   await handleNodeClick(tree.value.getCurrentNode());
+
 };
 const findMinSize = (data) => {
   if (data.length === 0) {
@@ -1298,7 +1318,33 @@ const findElementByPoint = (ele, x, y) => {
   }
   return result;
 };
+// 向后台传数据
 const handleNodeClick = (data) => {
+
+  handleNodeClick2(data);
+  if (recordEleType.value == 1 && data !== null) {
+    let v = "//" + data.detail.class + "[@text='" + data.detail.text + "']";
+    //   异步执行 向后台传数据
+    recordEleArr.value = [{
+      "type": "debug",
+      "detail": "checkLocation",
+      "element": v,
+      "eleType": "xpath",
+      "pwd": ""
+    }];
+    // endRecordEle()
+    // 执行跳转 刷新
+    checkLocation({
+      eleType: "xpath",
+      eleValue: v
+    });
+    // setTimeout(() => {  getElement() }, 3000);
+  }
+
+};
+
+const handleNodeClick2 = (data) => {
+  // alert(JSON.stringify(data.detail));
   if (data !== null) {
     elementDetail.value = data.detail;
     print(data);
@@ -1472,10 +1518,11 @@ const checkLocation = (data) => {
   checkLocation2(data);
   setTimeout(() => {
     getElement();
-  }, 2000);
+  }, 3000);
 };
 // 运行元素
 const checkLocation2 = (data) => {
+  console.error(data.eleValue);
   let v = {
     type: "debug",
     detail: "checkLocation",
@@ -1484,12 +1531,15 @@ const checkLocation2 = (data) => {
     pwd: device.value.password
   };
 
-  if (recordEleType.value == 1 || recordEleType.value == 2) {
-    recordEleArr.value.push(v);
-    if (recordEleType.value == 2) {
-      endRecordEle();
-    }
+  if (recordEleType.value == 1) {
+    endRecordEle();
   }
+  if (recordEleType.value == 2) {
+    recordEleArr.value.push(v);
+    endRecordEle();
+  }
+
+
   checkElementLoading.value = true;
   websocket.send(
     JSON.stringify(v)
@@ -1740,7 +1790,8 @@ const endRecord = () => {
     let para = {
       "recordActions": recordActions.value,
       "testCaseId": testCaseRecord.value.id,
-      "projectId": projectRecord.value.id
+      "projectId": projectRecord.value.id,
+      "moduleId": moduleRecord.value.id
     };
     axios.post("/controller/testCases/saveRecordActions", para).then((resp) => {
       endRecordLoading.value = false;
@@ -1781,7 +1832,8 @@ const endRecordEle = () => {
     let para = {
       "elements": recordEleArr.value,
       "testCaseId": testCaseRecordEle.value.id,
-      "projectId": projectRecordEle.value.id
+      "projectId": projectRecordEle.value.id,
+      "moduleId": moduleRecordEle.value.id
     };
     // todo: 后端增加接口 解析录制的元素
     axios.post("/controller/testCases/saveRecordElements", para).then((resp) => {
@@ -3978,6 +4030,7 @@ const checkAlive = () => {
                 size="mini"
                 value-key="id"
                 :placeholder="$t('androidRemoteTS.code.chooseProject')"
+                @change="getModule(projectRecord['id'])"
               >
                 <el-option
                   v-for="item in store.state.projectList"
@@ -4000,6 +4053,32 @@ const checkAlive = () => {
                   </div>
                 </el-option>
               </el-select>
+              <!--              录制坐标 关联模块-->
+              <span style="color: #909399; margin-right: 10px; margin-left: 10px">{{
+                  $t("androidRemoteTS.code.associatedModule")
+                }}</span>
+              <el-select
+                filterable
+                v-model="moduleRecord"
+                size="mini"
+                value-key="id"
+                :placeholder="$t('androidRemoteTS.code.chooseModule')"
+              >
+                <el-option
+                  v-for="item in modules"
+                  :key="item.id"
+                  :value="item"
+                  :label="item['name']"
+                >
+                  <div style="display: flex; align-items: center">
+                    {{ item["name"] }}
+                  </div>
+                </el-option>
+              </el-select>
+              <span style="color: #909399; margin-left: 10px">{{
+                  $t("androidRemoteTS.code.associatedProjectRecordHintText")
+                }}</span>
+              <!--              录制坐标 新增用例-->
               <el-button
                 v-if="projectRecord !== null"
                 size="mini"
@@ -4058,13 +4137,13 @@ const checkAlive = () => {
                         <el-radio-group v-model="recordEleType" @change="endRecordEle"
                                         style="margin-top: 10px;margin-left: 10px"
                         >
-                          <el-radio  label="0" border>
+                          <el-radio label="0">
                             {{ $t("androidRemoteTS.code.recordTypeDisable") }}
                           </el-radio>
-                          <el-radio  label="1" border>
+                          <el-radio label="1">
                             {{ $t("androidRemoteTS.code.recordTypeAuto") }}
                           </el-radio>
-                          <el-radio  label="2" border>
+                          <el-radio label="2">
                             {{ $t("androidRemoteTS.code.recordTypeWithChoose") }}
                           </el-radio>
                         </el-radio-group>
@@ -4217,6 +4296,7 @@ const checkAlive = () => {
                 size="mini"
                 value-key="id"
                 :placeholder="$t('androidRemoteTS.code.chooseProject')"
+                @change="getModule(projectRecordEle['id'])"
               >
                 <el-option
                   v-for="item in store.state.projectList"
@@ -4239,9 +4319,32 @@ const checkAlive = () => {
                   </div>
                 </el-option>
               </el-select>
+              <!--              关联模块-->
+              <span style="color: #909399; margin-right: 10px; margin-left: 10px">{{
+                  $t("androidRemoteTS.code.associatedModule")
+                }}</span>
+              <el-select
+                filterable
+                v-model="moduleRecordEle"
+                size="mini"
+                value-key="id"
+                :placeholder="$t('androidRemoteTS.code.chooseModule')"
+              >
+                <el-option
+                  v-for="item in modules"
+                  :key="item.id"
+                  :value="item"
+                  :label="item['name']"
+                >
+                  <div style="display: flex; align-items: center">
+                    {{ item["name"] }}
+                  </div>
+                </el-option>
+              </el-select>
               <span style="color: #909399; margin-left: 10px">{{
                   $t("androidRemoteTS.code.associatedProjectRecordHintText")
                 }}</span>
+              <!--              新增用例-->
               <el-button
                 v-if="projectRecordEle !== null"
                 size="mini"

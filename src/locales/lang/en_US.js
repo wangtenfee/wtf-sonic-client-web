@@ -899,7 +899,9 @@ const androidRemoteTS = {
       fatherPlayed: 'Belonging items',
     },
     associatedProject: 'Associated Project',
+    associatedModule: 'Associated Module',
     chooseProject: 'Please choose the associated project',
+    chooseModule: 'Please choose the associated module',
     addCase: 'Add Test Case',
     hintText: 'Hint',
     hintMessage:
