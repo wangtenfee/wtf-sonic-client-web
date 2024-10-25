@@ -369,7 +369,7 @@ const selectCaseRecordEle = (val) => {
 };
 // 根据projectId获取项目的模块
 const getModule = (id) => {
-  alert(id);
+  // alert(id);
   axios
     .get("/controller/modules/list", {
       params: {
@@ -3885,6 +3885,16 @@ const checkAlive = () => {
                           $t("androidRemoteTS.code.UIAutomation.testInfo")
                         }}</strong
                       >
+                      <strong
+                        style="
+                          font-size: 15px;
+                          color: #909399;
+                          margin-left: 10px;
+                        "
+                      >关联模块：{{
+                          moduleRecord['name']
+                        }}</strong
+                      >
                       <!--录制相关动作,录制相关BUTTON-->
                       <div style="display: flex; margin-top: 10px">
                         <el-button
@@ -4132,6 +4142,26 @@ const checkAlive = () => {
                           $t("androidRemoteTS.code.UIAutomation.testInfo")
                         }}</strong
                       >
+<!--                      <strong-->
+<!--                        style="-->
+<!--                          font-size: 15px;-->
+<!--                          color: #909399;-->
+<!--                          margin-left: 10px;-->
+<!--                        "-->
+<!--                      >关联项目：{{-->
+<!--                          projectRecordEle['projectName']-->
+<!--                        }}</strong-->
+<!--                      >-->
+                      <strong
+                        style="
+                          font-size: 15px;
+                          color: #909399;
+                          margin-left: 10px;
+                        "
+                      >关联模块：{{
+                          moduleRecordEle['name']
+                        }}</strong
+                      >
                       <!--录制相关动作,录制相关BUTTON-->
                       <div style="display: flex; margin-top: 10px;margin-bottom: 10px">
                         <el-radio-group v-model="recordEleType" @change="endRecordEle"
@@ -4165,12 +4195,12 @@ const checkAlive = () => {
                                                 </el-button>-->
 
                       </div>
-                      <el-button
-                        size="mini"
-                        type="danger"
-                        @click="endRecordEle"
-                      >{{ $t("androidRemoteTS.code.endRecord") }}
-                      </el-button>
+<!--                      <el-button-->
+<!--                        size="mini"-->
+<!--                        type="danger"-->
+<!--                        @click="endRecordEle"-->
+<!--                      >{{ $t("androidRemoteTS.code.endRecord") }}-->
+<!--                      </el-button>-->
                       <el-button
                         style="margin-right: 10px"
                         type="danger"
