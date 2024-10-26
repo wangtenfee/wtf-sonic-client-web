@@ -21,7 +21,7 @@ const testCase = ref({
   name: '',
   platform: props.platform,
   projectId: props.projectId,
-  moduleId: 0,
+  moduleId: props.moduleId,
   version: '',
   designer: '',
   des: '',
@@ -76,7 +76,7 @@ const getModuleList = () => {
     .then((resp) => {
       if (resp.code === 2000) {
         moduleList.value = resp.data;
-        moduleList.value.push({ id: 0, name: $t('common.null') });
+        // moduleList.value.push({ id: 0, name: $t('common.null') });
       }
     });
 };
@@ -192,7 +192,15 @@ onMounted(() => {
         </el-option>
       </el-select>
     </el-form-item>
-    <el-form-item :label="$t('testcase.modelLabel')">
+    <el-form-item
+      prop="moduleId"
+      :label="$t('testcase.modelLabel')"
+      :rules="{
+        required: true,
+        message: $t('testcase.modelPlace'),
+        trigger: 'change',
+      }"
+    >
       <el-select
         v-model="testCase.moduleId"
         :placeholder="$t('testcase.modelPlace')"

@@ -1791,7 +1791,7 @@ const endRecord = () => {
       "recordActions": recordActions.value,
       "testCaseId": testCaseRecord.value.id,
       "projectId": projectRecord.value.id,
-      "moduleId": moduleRecord.value.id
+      // "moduleId": moduleRecord.value.id
     };
     axios.post("/controller/testCases/saveRecordActions", para).then((resp) => {
       endRecordLoading.value = false;
@@ -1833,7 +1833,7 @@ const endRecordEle = () => {
       "elements": recordEleArr.value,
       "testCaseId": testCaseRecordEle.value.id,
       "projectId": projectRecordEle.value.id,
-      "moduleId": moduleRecordEle.value.id
+      // "moduleId": moduleRecordEle.value.id
     };
     // todo: 后端增加接口 解析录制的元素
     axios.post("/controller/testCases/saveRecordElements", para).then((resp) => {
@@ -3885,16 +3885,16 @@ const checkAlive = () => {
                           $t("androidRemoteTS.code.UIAutomation.testInfo")
                         }}</strong
                       >
-                      <strong
-                        style="
-                          font-size: 15px;
-                          color: #909399;
-                          margin-left: 10px;
-                        "
-                      >关联模块：{{
-                          moduleRecord['name']
-                        }}</strong
-                      >
+<!--                      <strong-->
+<!--                        style="-->
+<!--                          font-size: 15px;-->
+<!--                          color: #909399;-->
+<!--                          margin-left: 10px;-->
+<!--                        "-->
+<!--                      >关联模块：{{-->
+<!--                          moduleRecord['name']-->
+<!--                        }}</strong-->
+<!--                      >-->
                       <!--录制相关动作,录制相关BUTTON-->
                       <div style="display: flex; margin-top: 10px">
                         <el-button
@@ -4064,27 +4064,27 @@ const checkAlive = () => {
                 </el-option>
               </el-select>
               <!--              录制坐标 关联模块-->
-              <span style="color: #909399; margin-right: 10px; margin-left: 10px">{{
-                  $t("androidRemoteTS.code.associatedModule")
-                }}</span>
-              <el-select
-                filterable
-                v-model="moduleRecord"
-                size="mini"
-                value-key="id"
-                :placeholder="$t('androidRemoteTS.code.chooseModule')"
-              >
-                <el-option
-                  v-for="item in modules"
-                  :key="item.id"
-                  :value="item"
-                  :label="item['name']"
-                >
-                  <div style="display: flex; align-items: center">
-                    {{ item["name"] }}
-                  </div>
-                </el-option>
-              </el-select>
+<!--              <span style="color: #909399; margin-right: 10px; margin-left: 10px">{{-->
+<!--                  $t("androidRemoteTS.code.associatedModule")-->
+<!--                }}</span>-->
+<!--              <el-select-->
+<!--                filterable-->
+<!--                v-model="moduleRecord"-->
+<!--                size="mini"-->
+<!--                value-key="id"-->
+<!--                :placeholder="$t('androidRemoteTS.code.chooseModule')"-->
+<!--              >-->
+<!--                <el-option-->
+<!--                  v-for="item in modules"-->
+<!--                  :key="item.id"-->
+<!--                  :value="item"-->
+<!--                  :label="item['name']"-->
+<!--                >-->
+<!--                  <div style="display: flex; align-items: center">-->
+<!--                    {{ item["name"] }}-->
+<!--                  </div>-->
+<!--                </el-option>-->
+<!--              </el-select>-->
               <span style="color: #909399; margin-left: 10px">{{
                   $t("androidRemoteTS.code.associatedProjectRecordHintText")
                 }}</span>
@@ -4152,16 +4152,16 @@ const checkAlive = () => {
 <!--                          projectRecordEle['projectName']-->
 <!--                        }}</strong-->
 <!--                      >-->
-                      <strong
-                        style="
-                          font-size: 15px;
-                          color: #909399;
-                          margin-left: 10px;
-                        "
-                      >关联模块：{{
-                          moduleRecordEle['name']
-                        }}</strong
-                      >
+<!--                      <strong-->
+<!--                        style="-->
+<!--                          font-size: 15px;-->
+<!--                          color: #909399;-->
+<!--                          margin-left: 10px;-->
+<!--                        "-->
+<!--                      >关联模块：{{-->
+<!--                          moduleRecordEle['name']-->
+<!--                        }}</strong-->
+<!--                      >-->
                       <!--录制相关动作,录制相关BUTTON-->
                       <div style="display: flex; margin-top: 10px;margin-bottom: 10px">
                         <el-radio-group v-model="recordEleType" @change="endRecordEle"
@@ -4350,27 +4350,27 @@ const checkAlive = () => {
                 </el-option>
               </el-select>
               <!--              关联模块-->
-              <span style="color: #909399; margin-right: 10px; margin-left: 10px">{{
-                  $t("androidRemoteTS.code.associatedModule")
-                }}</span>
-              <el-select
-                filterable
-                v-model="moduleRecordEle"
-                size="mini"
-                value-key="id"
-                :placeholder="$t('androidRemoteTS.code.chooseModule')"
-              >
-                <el-option
-                  v-for="item in modules"
-                  :key="item.id"
-                  :value="item"
-                  :label="item['name']"
-                >
-                  <div style="display: flex; align-items: center">
-                    {{ item["name"] }}
-                  </div>
-                </el-option>
-              </el-select>
+<!--              <span style="color: #909399; margin-right: 10px; margin-left: 10px">{{-->
+<!--                  $t("androidRemoteTS.code.associatedModule")-->
+<!--                }}</span>-->
+<!--              <el-select-->
+<!--                filterable-->
+<!--                v-model="moduleRecordEle"-->
+<!--                size="mini"-->
+<!--                value-key="id"-->
+<!--                :placeholder="$t('androidRemoteTS.code.chooseModule')"-->
+<!--              >-->
+<!--                <el-option-->
+<!--                  v-for="item in modules"-->
+<!--                  :key="item.id"-->
+<!--                  :value="item"-->
+<!--                  :label="item['name']"-->
+<!--                >-->
+<!--                  <div style="display: flex; align-items: center">-->
+<!--                    {{ item["name"] }}-->
+<!--                  </div>-->
+<!--                </el-option>-->
+<!--              </el-select>-->
               <span style="color: #909399; margin-left: 10px">{{
                   $t("androidRemoteTS.code.associatedProjectRecordHintText")
                 }}</span>
