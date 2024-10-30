@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, onUnmounted } from "vue";
 import { ElMessage } from 'element-plus';
 import { useRouter } from 'vue-router';
 
@@ -48,6 +48,7 @@ const getTestCaseList = (pageNum, pSize) => {
       pageData.value = resp.data;
       tableLoading.value = false;
     });
+  localStorage.setItem('searchCaseInput', name.value);
 };
 const deleteCase = (id) => {
   axios
@@ -101,6 +102,7 @@ watch(
     getTestCaseList();
   }
 );
+
 const editCase = async (id) => {
   caseId.value = id;
   await open();
@@ -170,11 +172,15 @@ const filter = (filters) => {
   }
   getTestCaseList();
 };
+
+
 onMounted(() => {
+  name.value = localStorage.getItem('searchCaseInput') || '';
   getTestCaseList();
   getModuleList();
   getCaseAuthorList();
 });
+
 defineExpose({ open });
 </script>
 
@@ -215,8 +221,10 @@ defineExpose({ open });
       show-overflow-tooltip
     >
       <template #header>
+<!--        用例搜索框-->
         <el-input
           v-model="name"
+          clearable
           size="mini"
           :placeholder="$t('testcase.namePlace')"
           @input="getTestCaseList()"
@@ -275,6 +283,7 @@ defineExpose({ open });
       align="center"
     >
       <template #default="scope">
+<!--        步骤详情-->
         <el-button
           size="mini"
           @click="router.push('StepListView/' + scope.row.id)"
