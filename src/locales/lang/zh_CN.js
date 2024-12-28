@@ -262,7 +262,7 @@ const agent = {
   },
 };
 const devices = {
-  title: 'Sonic云真机平台',
+  title: '云真机平台',
   list: '设备列表',
   form: {
     model: '设备型号',
@@ -343,9 +343,9 @@ const layout = {
   myInfo: '我的信息',
   changePassword: '修改密码',
   signOut: '注销',
-  aboutSonic: '关于Sonic',
+  aboutSonic: '关于',
   backHome: '回到首页',
-  welcomeSpeech: '欢迎来到Sonic云真机测试平台，请选择项目进入',
+  welcomeSpeech: '欢迎来到云真机测试平台，请选择项目进入',
   addProject: '新增项目',
   officialWebSite: 'Sonic官方网站',
   document: '使用文档',
