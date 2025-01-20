@@ -1,7 +1,7 @@
 <p align="center">
   <img width="80px" src="https://raw.githubusercontent.com/SonicCloudOrg/sonic-server/main/logo.png">
 </p>
-<p align="center">🎉Sonic云真机平台前端</p>
+<p align="center">🎉云真机平台前端</p>
 <p align="center">
   <a href="https://github.com/SonicCloudOrg/sonic-client-web/blob/main/README.md">  
     English
@@ -37,7 +37,7 @@
 
 #### 什么是 Sonic ?
 
-> Sonic是一个集移动设备远程控制调试与自动化测试的平台，用心为全球开发者以及测试工程师打造更好的使用体验。
+> 是一个集移动设备远程控制调试与自动化测试的平台，用心为全球开发者以及测试工程师打造更好的使用体验。
 >
 >  如果你想参与其中，欢迎加入！💪
 >

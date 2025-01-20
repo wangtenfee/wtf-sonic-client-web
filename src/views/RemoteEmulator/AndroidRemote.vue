@@ -1265,6 +1265,7 @@ const touchstart = async (event) => {
       findMinSize(findElementByPoint(elementData.value, x, y))
     );
   });
+  console.error(tree.value.getCurrentNode())
   await handleNodeClick(tree.value.getCurrentNode());
 
 };
@@ -1320,9 +1321,10 @@ const findElementByPoint = (ele, x, y) => {
 };
 // 向后台传数据
 const handleNodeClick = (data) => {
-
+  // console.error(JSON.toString(data))
+  // [{"type":"debug","detail":"checkLocation","element":"//android.widget.RelativeLayout[@text='']","eleType":"xpath","pwd":""}]
   handleNodeClick2(data);
-  if (recordEleType.value == 1 && data !== null) {
+  if (recordEleType.value == 1 && data !== null && data.detail.text !== '' ) {
     let v = "//" + data.detail.class + "[@text='" + data.detail.text + "']";
     //   异步执行 向后台传数据
     recordEleArr.value = [{
@@ -1339,6 +1341,10 @@ const handleNodeClick = (data) => {
       eleValue: v
     });
     // setTimeout(() => {  getElement() }, 3000);
+  } else{
+    ElMessage.error({
+      message: "未获取到元素",
+    });
   }
 
 };
