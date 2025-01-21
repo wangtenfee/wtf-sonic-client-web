@@ -16,27 +16,27 @@
  *   You should have received a copy of the GNU Affero General Public License
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import { useRoute, useRouter } from "vue-router";
+import { useRoute, useRouter } from 'vue-router';
 import {
   computed,
   nextTick,
   onBeforeUnmount,
   onMounted,
   ref,
-  watch
-} from "vue";
-import { useStore } from "vuex";
-import axios from "@/http/axios";
-import { ElMessage } from "element-plus";
-import useClipboard from "vue-clipboard3";
-import ColorImg from "@/components/ColorImg.vue";
-import StepList from "@/components/StepList.vue";
-import TestCaseList from "@/components/TestCaseList.vue";
-import StepLog from "@/components/StepLog.vue";
-import ElementUpdate from "@/components/ElementUpdate.vue";
-import Pageable from "@/components/Pageable.vue";
-import PackageList from "@/components/PackageList.vue";
-import defaultLogo from "@/assets/logo.png";
+  watch,
+} from 'vue';
+import { useStore } from 'vuex';
+import axios from '@/http/axios';
+import { ElMessage } from 'element-plus';
+import useClipboard from 'vue-clipboard3';
+import ColorImg from '@/components/ColorImg.vue';
+import StepList from '@/components/StepList.vue';
+import TestCaseList from '@/components/TestCaseList.vue';
+import StepLog from '@/components/StepLog.vue';
+import ElementUpdate from '@/components/ElementUpdate.vue';
+import Pageable from '@/components/Pageable.vue';
+import PackageList from '@/components/PackageList.vue';
+import defaultLogo from '@/assets/logo.png';
 import {
   VideoPause,
   Refresh,
@@ -69,18 +69,18 @@ import {
   Service,
   VideoCamera,
   Postcard,
-  Location
-} from "@element-plus/icons";
+  Location,
+} from '@element-plus/icons';
 
-import { useI18n } from "vue-i18n";
+import { useI18n } from 'vue-i18n';
 
-import AudioProcessor from "@/lib/audio-processor";
-import wifiLogo from "@/assets/img/wifi.png";
-import RenderDeviceName from "../../components/RenderDeviceName.vue";
-import Scrcpy from "./Scrcpy";
-import PocoPane from "../../components/PocoPane.vue";
-import AndroidPerf from "../../components/AndroidPerf.vue";
-import RemotePageHeader from "../../components/RemotePageHeader.vue";
+import AudioProcessor from '@/lib/audio-processor';
+import wifiLogo from '@/assets/img/wifi.png';
+import RenderDeviceName from '../../components/RenderDeviceName.vue';
+import Scrcpy from './Scrcpy';
+import PocoPane from '../../components/PocoPane.vue';
+import AndroidPerf from '../../components/AndroidPerf.vue';
+import RemotePageHeader from '../../components/RemotePageHeader.vue';
 
 const pocoPaneRef = ref(null);
 const androidPerfRef = ref(null);
@@ -91,12 +91,12 @@ const route = useRoute();
 const store = useStore();
 const router = useRouter();
 const wifiList = ref([]);
-const currentWifi = ref("");
+const currentWifi = ref('');
 const isConnectWifi = ref(false);
 const pocoLoading = ref(false);
 const proxyWebPort = ref(0);
 const proxyConnPort = ref(0);
-const filterAppText = ref("");
+const filterAppText = ref('');
 const iFrameHeight = ref(0);
 const terminalHeight = ref(0);
 const caseList = ref(null);
@@ -109,8 +109,8 @@ const appList = ref([]);
 const device = ref({});
 const agent = ref({});
 const screenUrls = ref([]);
-const uploadUrl = ref("");
-const text = ref({ content: "" });
+const uploadUrl = ref('');
+const text = ref({ content: '' });
 const isMultiWindows = ref(false);
 const isIgnore = ref(true);
 const isVisible = ref(false);
@@ -118,7 +118,7 @@ let imgWidth = 0;
 let imgHeight = 0;
 // 旋转状态 // 0 90 180 270
 const directionStatus = {
-  value: -1
+  value: -1,
 };
 let moveX = 0;
 let moveY = 0;
@@ -129,9 +129,9 @@ let time = 0;
 let isLongPress = false;
 let mouseMoveTime = 0;
 let touchWrapper = null;
-const pic = ref("高");
-const _screenMode = window.localStorage.getItem("screenMode");
-const screenMode = ref(_screenMode || "Scrcpy"); // Scrcpy,Minicap
+const pic = ref('高');
+const _screenMode = window.localStorage.getItem('screenMode');
+const screenMode = ref(_screenMode || 'Scrcpy'); // Scrcpy,Minicap
 const elementLoading = ref(false);
 const startRecordFlag = ref(false); // 开始录制的标识
 const startRecordEleFlag = ref(false); // 开始录制的标识
@@ -143,8 +143,8 @@ const endRecordEleLoading = ref(false); // 结束录制加载
 const isShowImg = ref(false);
 const isDriverFinish = ref(false);
 const flushStep = ref(0);
-const imgUrl = ref("");
-const activity = ref("");
+const imgUrl = ref('');
+const activity = ref('');
 const webViewData = ref([]);
 const isShowTree = ref(false);
 const elementData = ref([]);
@@ -152,7 +152,7 @@ const elementDetail = ref(null);
 const elementScreenLoading = ref(false);
 const tree = ref(null);
 const currentId = ref([]);
-const filterText = ref("");
+const filterText = ref('');
 const project = ref(null);
 const modules = ref([]);
 const projectRecord = ref(null);
@@ -162,10 +162,10 @@ const moduleRecordEle = ref(null);
 const testCase = ref({});
 const testCaseRecord = ref({});
 const testCaseRecordEle = ref({});
-const activeTab = ref("main");
-const activeTab2 = ref("step");
-const activeTab2Record = ref("step");
-const activeTab2RecordEle = ref("step");
+const activeTab = ref('main');
+const activeTab2 = ref('step');
+const activeTab2Record = ref('step');
+const activeTab2RecordEle = ref('step');
 const stepLog = ref([]);
 const stepLogRecord = ref([]);
 const debugLoading = ref(false);
@@ -178,53 +178,53 @@ const imgElementUrl = ref(null);
 const updateImgEle = ref(null);
 const webViewListDetail = ref([]);
 const isWebView = ref(true);
-const iframeUrl = ref("");
-const title = ref("");
+const iframeUrl = ref('');
+const title = ref('');
 const webViewLoading = ref(false);
-const cmdInput = ref("");
+const cmdInput = ref('');
 const cmdOutPut = ref([]);
-const cmdUser = ref("");
+const cmdUser = ref('');
 const logcatOutPut = ref([]);
 const terScroll = ref(null);
 const logcatScroll = ref(null);
 const cmdIsDone = ref(true);
 const uploadLoading = ref(false);
-const remoteAdbUrl = ref("");
+const remoteAdbUrl = ref('');
 const logcatFilter = ref({
-  level: "E",
-  filter: ""
+  level: 'E',
+  filter: '',
 });
 let oldBlob;
 const element = ref({
   id: null,
   moduleId: 0,
-  eleName: "",
-  eleType: "image",
-  eleValue: "",
-  projectId: 0
+  eleName: '',
+  eleType: 'image',
+  eleValue: '',
+  projectId: 0,
 });
 const computedCenter = (b1, b2) => {
-  const x1 = b1.substring(0, b1.indexOf(","));
-  const y1 = b1.substring(b1.indexOf(",") + 1);
-  const x2 = b2.substring(0, b2.indexOf(","));
-  const y2 = b2.substring(b2.indexOf(",") + 1);
+  const x1 = b1.substring(0, b1.indexOf(','));
+  const y1 = b1.substring(b1.indexOf(',') + 1);
+  const x2 = b2.substring(0, b2.indexOf(','));
+  const y2 = b2.substring(b2.indexOf(',') + 1);
   const x = parseInt((parseInt(x2) + parseInt(x1)) / 2);
   const y = parseInt((parseInt(y1) + parseInt(y2)) / 2);
   return `${x},${y}`;
 };
 const switchTabs = (e) => {
-  if (e.props.name === "proxy") {
+  if (e.props.name === 'proxy') {
     getWifiList();
   }
-  if (e.props.name === "apps" || e.props.name === "perfmon") {
+  if (e.props.name === 'apps' || e.props.name === 'perfmon') {
     if (appList.value.length === 0) {
       refreshAppList();
     }
   }
-  if (e.props.name === "terminal") {
-    terminalHeight.value = document.getElementById("pressKey").offsetTop - 150;
+  if (e.props.name === 'terminal') {
+    terminalHeight.value = document.getElementById('pressKey').offsetTop - 150;
   }
-  if (e.props.name === "webview") {
+  if (e.props.name === 'webview') {
     if (webViewListDetail.value.length === 0) {
       getWebViewForward();
     }
@@ -233,19 +233,19 @@ const switchTabs = (e) => {
 const startPerfmon = (bundleId) => {
   websocket.send(
     JSON.stringify({
-      type: "startPerfmon",
-      bundleId
+      type: 'startPerfmon',
+      bundleId,
     })
   );
 };
 const stopPerfmon = () => {
   websocket.send(
     JSON.stringify({
-      type: "stopPerfmon"
+      type: 'stopPerfmon',
     })
   );
 };
-const img = import.meta.globEager("../../assets/img/*");
+const img = import.meta.globEager('../../assets/img/*');
 let websocket = null;
 let screenWebsocket = null;
 let __Scrcpy = null; // 实例
@@ -259,7 +259,7 @@ defineProps({
   lineMouseup: Function,
   lineMousemove: Function,
   lineMousedown: Function,
-  lineMouseleave: Function
+  lineMouseleave: Function,
 });
 
 const tabWebView = (port, id, transTitle) => {
@@ -273,13 +273,13 @@ const tabWebView = (port, id, transTitle) => {
 const saveEle = () => {
   updateImgEle.value.validate((valid) => {
     if (valid) {
-      element.value.eleType = "image";
+      element.value.eleType = 'image';
       element.value.eleValue = imgElementUrl.value;
       element.value.projectId = project.value.id;
-      axios.put("/controller/elements", element.value).then((resp) => {
+      axios.put('/controller/elements', element.value).then((resp) => {
         if (resp.code === 2000) {
           ElMessage.success({
-            message: resp.message
+            message: resp.message,
           });
           dialogImgElement.value = false;
         }
@@ -327,13 +327,13 @@ const filterTableData = computed(() => {
 });
 const fixTouch = () => {
   ElMessage.success({
-    message: $t("androidRemoteTS.repairedSuccess")
+    message: $t('androidRemoteTS.repairedSuccess'),
   });
   isFixTouch = !isFixTouch;
 };
 const fixOri = () => {
   ElMessage.success({
-    message: $t("androidRemoteTS.repairedSuccess")
+    message: $t('androidRemoteTS.repairedSuccess'),
   });
   if (directionStatus.value === 0 || directionStatus.value === 180) {
     directionStatus.value = 90;
@@ -347,7 +347,7 @@ const switchIsWebView = () => {
 // UI自动化里的选择测试用例
 const selectCase = (val) => {
   ElMessage.success({
-    message: $t("androidRemoteTS.associationSuccess")
+    message: $t('androidRemoteTS.associationSuccess'),
   });
   testCase.value = val;
 };
@@ -355,7 +355,7 @@ const selectCase = (val) => {
 // 录制坐标里 选择测试用例
 const selectCaseRecord = (val) => {
   ElMessage.success({
-    message: $t("androidRemoteTS.associationSuccess")
+    message: $t('androidRemoteTS.associationSuccess'),
   });
   testCaseRecord.value = val;
 };
@@ -363,7 +363,7 @@ const selectCaseRecord = (val) => {
 // 录制元素里 选择测试用例
 const selectCaseRecordEle = (val) => {
   ElMessage.success({
-    message: $t("androidRemoteTS.associationSuccess")
+    message: $t('androidRemoteTS.associationSuccess'),
   });
   testCaseRecordEle.value = val;
 };
@@ -371,10 +371,10 @@ const selectCaseRecordEle = (val) => {
 const getModule = (id) => {
   // alert(id);
   axios
-    .get("/controller/modules/list", {
+    .get('/controller/modules/list', {
       params: {
-        projectId: id
-      }
+        projectId: id,
+      },
     })
     .then((resp) => {
       modules.value = resp.data;
@@ -395,28 +395,28 @@ const removeCaseRecordEle = () => {
 };
 const getImg = (name) => {
   let result;
-  if (name === "meizu") {
-    name = "Meizu";
+  if (name === 'meizu') {
+    name = 'Meizu';
   }
-  if (name === "LENOVO") {
-    name = "Lenovo";
+  if (name === 'LENOVO') {
+    name = 'Lenovo';
   }
   try {
     result = img[`../../assets/img/${name}.jpg`].default;
   } catch {
-    result = img["../../assets/img/unName.jpg"].default;
+    result = img['../../assets/img/unName.jpg'].default;
   }
   return result;
 };
 // 选中安装包列表中的item后响应事件
 const selectPackage = (val) => {
   ElMessage.success({
-    message: $t("androidRemoteTS.startInstall")
+    message: $t('androidRemoteTS.startInstall'),
   });
   install(val);
 };
 // 三种安装包方式tab选中态
-const activeIntallTab = ref("pushInstallPane");
+const activeIntallTab = ref('pushInstallPane');
 watch(filterText, (newValue, oldValue) => {
   tree.value.filter(newValue);
 });
@@ -424,8 +424,8 @@ const filterNode = (value, data) => {
   if (!value) return true;
   return (
     data.label.indexOf(value) !== -1 ||
-    (data.detail["resource-id"]
-      ? data.detail["resource-id"].indexOf(value) !== -1
+    (data.detail['resource-id']
+      ? data.detail['resource-id'].indexOf(value) !== -1
       : false)
   );
 };
@@ -434,9 +434,9 @@ const filterNode = (value, data) => {
 const findBestXpath = (elementDetail) => {
   // alert(JSON.stringify(elementDetail))
   const result = [];
-  if (elementDetail["resource-id"]) {
+  if (elementDetail['resource-id']) {
     result.push(
-      `//${elementDetail.class}[@resource-id='${elementDetail["resource-id"]}']`
+      `//${elementDetail.class}[@resource-id='${elementDetail['resource-id']}']`
     );
   }
   if (elementDetail.text) {
@@ -445,19 +445,19 @@ const findBestXpath = (elementDetail) => {
       `//${elementDetail.class}[contains(@text,'${elementDetail.text}')]`
     );
   }
-  if (elementDetail["content-desc"]) {
+  if (elementDetail['content-desc']) {
     result.push(
-      `//${elementDetail.class}[@content-desc='${elementDetail["content-desc"]}']`
+      `//${elementDetail.class}[@content-desc='${elementDetail['content-desc']}']`
     );
     result.push(
-      `//${elementDetail.class}[contains(@content-desc,'${elementDetail["content-desc"]}')]`
+      `//${elementDetail.class}[contains(@content-desc,'${elementDetail['content-desc']}')]`
     );
   }
   return result;
 };
 const downloadImg = (url) => {
   const time = new Date().getTime();
-  const link = document.createElement("a");
+  const link = document.createElement('a');
   fetch(url)
     .then((res) => res.blob())
     .then((blob) => {
@@ -472,11 +472,11 @@ const copy = (value) => {
   try {
     toClipboard(value);
     ElMessage.success({
-      message: $t("androidRemoteTS.copySuccess")
+      message: $t('androidRemoteTS.copySuccess'),
     });
   } catch (e) {
     ElMessage.error({
-      message: $t("androidRemoteTS.copyFail")
+      message: $t('androidRemoteTS.copyFail'),
     });
   }
 };
@@ -491,21 +491,21 @@ const removeScreen = () => {
   screenUrls.value = [];
 };
 const getVideoScreenshot = () => {
-  const canvas = document.createElement("canvas");
-  const canvasCtx = canvas.getContext("2d");
-  const video = document.getElementById("scrcpy-video");
+  const canvas = document.createElement('canvas');
+  const canvasCtx = canvas.getContext('2d');
+  const video = document.getElementById('scrcpy-video');
   // 默认生成图片大小
   let w;
   let h;
   if (directionStatus.value === 0 || directionStatus.value === 180) {
-    if (screenMode.value == "Scrcpy") {
+    if (screenMode.value == 'Scrcpy') {
       w = imgWidth;
       h = imgHeight;
     } else {
       w = 369;
       h = 800;
     }
-  } else if (screenMode.value == "Scrcpy") {
+  } else if (screenMode.value == 'Scrcpy') {
     w = imgHeight;
     h = imgWidth;
   } else {
@@ -525,12 +525,12 @@ const getVideoScreenshot = () => {
     w,
     h
   );
-  return canvas.toDataURL("image/png", 1);
+  return canvas.toDataURL('image/png', 1);
 };
 const quickCap = () => {
   let imageUrl;
   if (oldBlob) {
-    const blob = new Blob([oldBlob], { type: "image/jpeg" });
+    const blob = new Blob([oldBlob], { type: 'image/jpeg' });
     const URL = window.URL || window.webkitURL;
     imageUrl = URL.createObjectURL(blob);
   } else {
@@ -543,7 +543,7 @@ const quickCap = () => {
 const getImgUrl = () => {
   let imageUrl;
   if (oldBlob) {
-    const blob = new Blob([oldBlob], { type: "image/jpeg" });
+    const blob = new Blob([oldBlob], { type: 'image/jpeg' });
     const URL = window.URL || window.webkitURL;
     imageUrl = URL.createObjectURL(blob);
   } else {
@@ -556,62 +556,60 @@ const setImgData = () => {
   const img = new Image();
   img.src = imageUrl;
   imgUrl.value = imageUrl;
-  const canvas = document.getElementById("debugPic");
-  img.onload = function() {
+  const canvas = document.getElementById('debugPic');
+  img.onload = function () {
     canvas.width = img.width;
     canvas.height = img.height;
   };
   isShowImg.value = true;
 };
 const openSocket = (host, port, key, udId) => {
-  if ("WebSocket" in window) {
+  if ('WebSocket' in window) {
     //
     websocket = new WebSocket(
       `ws://${host}:${port}/websockets/android/${key}/${udId}/${localStorage.getItem(
-        "SonicToken"
+        'SonicToken'
       )}`
     );
     //
     __Scrcpy = new Scrcpy({
       socketURL: `ws://${host}:${port}/websockets/android/screen/${key}/${udId}/${localStorage.getItem(
-        "SonicToken"
+        'SonicToken'
       )}`,
-      node: "scrcpy-video",
+      node: 'scrcpy-video',
       onmessage: screenWebsocketOnmessage,
-      excuteMode: screenMode.value
+      excuteMode: screenMode.value,
     });
     screenWebsocket = __Scrcpy.websocket;
     changeScreenMode(screenMode.value, 1);
     //
     terminalWebsocket = new WebSocket(
       `ws://${host}:${port}/websockets/android/terminal/${key}/${udId}/${localStorage.getItem(
-        "SonicToken"
+        'SonicToken'
       )}`
     );
   } else {
-    console.error($t("androidRemoteTS.noWebSocket"));
+    console.error($t('androidRemoteTS.noWebSocket'));
   }
   websocket.onmessage = websocketOnmessage;
-  websocket.onclose = (e) => {
-  };
+  websocket.onclose = (e) => {};
   terminalWebsocket.onmessage = terminalWebsocketOnmessage;
-  terminalWebsocket.onclose = (e) => {
-  };
+  terminalWebsocket.onclose = (e) => {};
   driverLoading.value = true;
 };
 const sendLogcat = () => {
   terminalWebsocket.send(
     JSON.stringify({
-      type: "logcat",
+      type: 'logcat',
       level: logcatFilter.value.level,
-      filter: logcatFilter.value.filter
+      filter: logcatFilter.value.filter,
     })
   );
 };
 const getWifiList = () => {
   terminalWebsocket.send(
     JSON.stringify({
-      type: "wifiList"
+      type: 'wifiList',
     })
   );
 };
@@ -621,20 +619,20 @@ const clearLogcat = () => {
 const stopLogcat = () => {
   terminalWebsocket.send(
     JSON.stringify({
-      type: "stopLogcat"
+      type: 'stopLogcat',
     })
   );
 };
 const saveLogcat = () => {
   if (logcatOutPut.value && Array.isArray(logcatOutPut.value)) {
-    const logContent = logcatOutPut.value.join("\n");
-    const blob = new Blob([logContent], { type: "text/plain;charset=utf-8" });
+    const logContent = logcatOutPut.value.join('\n');
+    const blob = new Blob([logContent], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const now = new Date();
-    const formattedDate = now.toISOString().replace(/:/g, "-").split(".")[0];
+    const formattedDate = now.toISOString().replace(/:/g, '-').split('.')[0];
     const modelName = device.value.model;
     const fileName = `${modelName}_${formattedDate}.log`;
-    const a = document.createElement("a");
+    const a = document.createElement('a');
     a.href = url;
     a.download = fileName;
     document.body.appendChild(a);
@@ -642,7 +640,7 @@ const saveLogcat = () => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   } else {
-    console.error("logcatOutPut or logcatOutPut.value not expect");
+    console.error('logcatOutPut or logcatOutPut.value not expect');
   }
 };
 
@@ -658,11 +656,11 @@ const sendCmd = () => {
     );
     terminalWebsocket.send(
       JSON.stringify({
-        type: "command",
-        detail: cmdInput.value
+        type: 'command',
+        detail: cmdInput.value,
       })
     );
-    cmdInput.value = "";
+    cmdInput.value = '';
   }
 };
 const clearCmd = () => {
@@ -672,25 +670,25 @@ const stopCmd = () => {
   cmdIsDone.value = true;
   terminalWebsocket.send(
     JSON.stringify({
-      type: "stopCmd"
+      type: 'stopCmd',
     })
   );
 };
 const terminalWebsocketOnmessage = (message) => {
   switch (JSON.parse(message.data).msg) {
-    case "wifiListDetail": {
+    case 'wifiListDetail': {
       isConnectWifi.value = JSON.parse(message.data).detail.isConnectWifi;
       currentWifi.value = JSON.parse(message.data).detail.connectedWifi.SSID;
       break;
     }
-    case "appListDetail": {
+    case 'appListDetail': {
       appList.value.push(JSON.parse(message.data).detail);
       break;
     }
-    case "logcat":
-      logcatOutPut.value.push($t("androidRemoteTS.connection"));
+    case 'logcat':
+      logcatOutPut.value.push($t('androidRemoteTS.connection'));
       break;
-    case "logcatResp":
+    case 'logcatResp':
       logcatOutPut.value.push(
         JSON.parse(message.data)
           .detail.replace(/ I /g, "<span style='color: #0d84ff'> I </span>")
@@ -705,22 +703,22 @@ const terminalWebsocketOnmessage = (message) => {
           logcatScroll.value.wrap.scrollHeight;
       });
       break;
-    case "terminal":
+    case 'terminal':
       cmdUser.value = JSON.parse(message.data).user;
-      cmdOutPut.value.push($t("androidRemoteTS.connection"));
+      cmdOutPut.value.push($t('androidRemoteTS.connection'));
       break;
-    case "terResp":
+    case 'terResp':
       cmdOutPut.value.push(JSON.parse(message.data).detail);
       nextTick(() => {
         terScroll.value.wrap.scrollTop = terScroll.value.wrap.scrollHeight;
       });
       break;
-    case "terDone":
+    case 'terDone':
       cmdIsDone.value = true;
       break;
-    case "error":
+    case 'error':
       ElMessage.error({
-        message: $t("androidRemoteTS.systemException")
+        message: $t('androidRemoteTS.systemException'),
       });
       close();
       break;
@@ -728,14 +726,14 @@ const terminalWebsocketOnmessage = (message) => {
 };
 const screenWebsocketOnmessage = (message) => {
   // console.log('screenWebsocketOnmessage', message.data);
-  if (typeof message.data === "object") {
+  if (typeof message.data === 'object') {
     oldBlob = message.data;
-    const blob = new Blob([message.data], { type: "image/jpeg" });
+    const blob = new Blob([message.data], { type: 'image/jpeg' });
     const URL = window.URL || window.webkitURL;
     const img = new Image();
-    const canvas = document.getElementById("canvas");
-    const g = canvas.getContext("2d");
-    img.onload = function() {
+    const canvas = document.getElementById('canvas');
+    const g = canvas.getContext('2d');
+    img.onload = function () {
       // 不根据按钮组，使用数据源的分辨率点对点
       const { width } = img;
       const { height } = img;
@@ -747,29 +745,29 @@ const screenWebsocketOnmessage = (message) => {
     img.src = u;
   } else {
     switch (JSON.parse(message.data).msg) {
-      case "rotation": {
+      case 'rotation': {
         if (directionStatus.value !== -1) {
           loading.value = true;
           ElMessage.success({
-            message: $t("androidRemoteTS.messageOne")
+            message: $t('androidRemoteTS.messageOne'),
           });
         }
         directionStatus.value = JSON.parse(message.data).value; // TODO
         // 旋转需要重置一下jmuxer
-        if (screenMode.value == "Scrcpy") {
+        if (screenMode.value == 'Scrcpy') {
           // 重置播放器
           __Scrcpy.jmuxer && __Scrcpy.jmuxer.reset();
         }
         break;
       }
-      case "support": {
+      case 'support': {
         ElMessage.error({
-          message: JSON.parse(message.data).text
+          message: JSON.parse(message.data).text,
         });
         loading.value = false;
         break;
       }
-      case "size": {
+      case 'size': {
         imgWidth = JSON.parse(message.data).width;
         imgHeight = JSON.parse(message.data).height;
         loading.value = false;
@@ -779,13 +777,13 @@ const screenWebsocketOnmessage = (message) => {
         );
         break;
       }
-      case "picFinish": {
+      case 'picFinish': {
         loading.value = false;
         break;
       }
-      case "error":
+      case 'error':
         ElMessage.error({
-          message: $t("androidRemoteTS.systemException")
+          message: $t('androidRemoteTS.systemException'),
         });
         close();
         break;
@@ -794,25 +792,25 @@ const screenWebsocketOnmessage = (message) => {
 };
 const websocketOnmessage = (message) => {
   switch (JSON.parse(message.data).msg) {
-    case "perfDetail":
+    case 'perfDetail':
       androidPerfRef.value.setData(JSON.parse(message.data).detail);
       break;
-    case "poco": {
+    case 'poco': {
       pocoLoading.value = false;
       const { result } = JSON.parse(message.data);
       if (result) {
         ElMessage.success({
-          message: $t("androidRemoteTS.getPocoSuccess")
+          message: $t('androidRemoteTS.getPocoSuccess'),
         });
         pocoPaneRef.value.setPocoData(JSON.parse(result).result);
       } else {
         ElMessage.error({
-          message: $t("androidRemoteTS.getPocoFail")
+          message: $t('androidRemoteTS.getPocoFail'),
         });
       }
       break;
     }
-    case "proxyResult": {
+    case 'proxyResult': {
       proxyWebPort.value = JSON.parse(message.data).webPort;
       proxyConnPort.value = JSON.parse(message.data).port;
       nextTick(() => {
@@ -820,41 +818,41 @@ const websocketOnmessage = (message) => {
       });
       break;
     }
-    case "pullResult": {
+    case 'pullResult': {
       pullLoading.value = false;
-      if (JSON.parse(message.data).status === "success") {
+      if (JSON.parse(message.data).status === 'success') {
         ElMessage.success({
-          message: $t("androidRemoteTS.pullFile.success")
+          message: $t('androidRemoteTS.pullFile.success'),
         });
         pullResult.value = JSON.parse(message.data).url;
       } else {
         ElMessage.error({
-          message: $t("androidRemoteTS.pullFile.fail")
+          message: $t('androidRemoteTS.pullFile.fail'),
         });
       }
       break;
     }
-    case "paste": {
+    case 'paste': {
       paste.value = JSON.parse(message.data).detail;
       ElMessage.success({
-        message: $t("IOSRemote.clipboard.text")
+        message: $t('IOSRemote.clipboard.text'),
       });
       break;
     }
-    case "pushResult": {
+    case 'pushResult': {
       pushLoading.value = false;
-      if (JSON.parse(message.data).status === "success") {
+      if (JSON.parse(message.data).status === 'success') {
         ElMessage.success({
-          message: $t("androidRemoteTS.pushFile.success")
+          message: $t('androidRemoteTS.pushFile.success'),
         });
       } else {
         ElMessage.error({
-          message: $t("androidRemoteTS.pushFile.fail")
+          message: $t('androidRemoteTS.pushFile.fail'),
         });
       }
       break;
     }
-    case "sas": {
+    case 'sas': {
       remoteAdbLoading.value = false;
       if (
         JSON.parse(message.data).isEnable &&
@@ -867,7 +865,7 @@ const websocketOnmessage = (message) => {
       break;
     }
     // 重新获取元素
-    case "tree": {
+    case 'tree': {
       // 弹出 获取原生控件元素成功
       // ElMessage.success({
       //   message: $t("androidRemoteTS.getEle.success")
@@ -881,86 +879,86 @@ const websocketOnmessage = (message) => {
       activity.value = result.activity;
       break;
     }
-    case "treeFail": {
+    case 'treeFail': {
       ElMessage.error({
-        message: $t("androidRemoteTS.getEle.fail")
+        message: $t('androidRemoteTS.getEle.fail'),
       });
       elementLoading.value = false;
       break;
     }
-    case "installFinish": {
-      if (JSON.parse(message.data).status === "success") {
+    case 'installFinish': {
+      if (JSON.parse(message.data).status === 'success') {
         ElMessage.success({
-          message: $t("androidRemoteTS.install.success")
+          message: $t('androidRemoteTS.install.success'),
         });
       } else {
         ElMessage.error({
-          message: $t("androidRemoteTS.install.fail")
+          message: $t('androidRemoteTS.install.fail'),
         });
       }
       break;
     }
-    case "uninstallFinish": {
-      if (JSON.parse(message.data).detail === "success") {
+    case 'uninstallFinish': {
+      if (JSON.parse(message.data).detail === 'success') {
         ElMessage.success({
-          message: $t("androidRemoteTS.uninstall.success")
+          message: $t('androidRemoteTS.uninstall.success'),
         });
       } else {
         ElMessage.error({
-          message: $t("androidRemoteTS.uninstall.fail")
+          message: $t('androidRemoteTS.uninstall.fail'),
         });
       }
       break;
     }
-    case "openDriver": {
-      let msg = $t("androidRemoteTS.driverStatus.fail");
+    case 'openDriver': {
+      let msg = $t('androidRemoteTS.driverStatus.fail');
       driverLoading.value = false;
-      if (JSON.parse(message.data).status === "success") {
+      if (JSON.parse(message.data).status === 'success') {
         isDriverFinish.value = true;
-        msg = $t("androidRemoteTS.driverStatus.success");
+        msg = $t('androidRemoteTS.driverStatus.success');
       }
       ElMessage({
         type: JSON.parse(message.data).status,
-        message: msg
+        message: msg,
       });
       break;
     }
-    case "step": {
+    case 'step': {
       setStepLog(JSON.parse(message.data));
       break;
     }
-    case "status": {
+    case 'status': {
       debugLoading.value = false;
       checkElementLoading.value = false;
       ElMessage.info({
-        message: $t("androidRemoteTS.runOver")
+        message: $t('androidRemoteTS.runOver'),
       });
       break;
     }
-    case "forwardView": {
+    case 'forwardView': {
       webViewLoading.value = false;
       ElMessage.success({
-        message: $t("androidRemoteTS.getSuccess")
+        message: $t('androidRemoteTS.getSuccess'),
       });
       webViewListDetail.value = JSON.parse(message.data).detail;
       break;
     }
-    case "eleScreen": {
+    case 'eleScreen': {
       if (JSON.parse(message.data).img) {
         ElMessage.success({
-          message: $t("androidRemoteTS.getPsSuccess")
+          message: $t('androidRemoteTS.getPsSuccess'),
         });
         imgElementUrl.value = JSON.parse(message.data).img;
         dialogImgElement.value = true;
       } else {
-        ElMessage.error($t("IOSRemote.eleScreen.err"));
+        ElMessage.error($t('IOSRemote.eleScreen.err'));
       }
       elementScreenLoading.value = false;
       break;
     }
-    case "error": {
+    case 'error': {
       ElMessage.error({
-        message: $t("androidRemoteTS.systemException")
+        message: $t('androidRemoteTS.systemException'),
       });
       close();
       router.go(-1);
@@ -968,52 +966,52 @@ const websocketOnmessage = (message) => {
     }
   }
 };
-const inputValue = ref("");
+const inputValue = ref('');
 const inputBox = ref(null);
 const inputBoxStyle = ref({});
-const paste = ref("");
+const paste = ref('');
 const changeInputHandle = () => {
   if (inputValue.value) {
     websocket.send(
       JSON.stringify({
-        type: "text",
-        detail: inputValue.value
+        type: 'text',
+        detail: inputValue.value,
       })
     );
-    inputValue.value = "";
+    inputValue.value = '';
   }
 };
 const deleteInputHandle = () => {
   websocket.send(
     JSON.stringify({
-      type: "text",
-      detail: "CODE_AC_BACK"
+      type: 'text',
+      detail: 'CODE_AC_BACK',
     })
   );
 };
 const setPasteboard = (text) => {
   websocket.send(
     JSON.stringify({
-      type: "setPasteboard",
-      detail: text
+      type: 'setPasteboard',
+      detail: text,
     })
   );
   ElMessage.success({
-    message: $t("IOSRemote.clipboard.SentSuccessfully")
+    message: $t('IOSRemote.clipboard.SentSuccessfully'),
   });
 };
 const getPasteboard = () => {
   websocket.send(
     JSON.stringify({
-      type: "getPasteboard"
+      type: 'getPasteboard',
     })
   );
 };
 const enterInputHandle = () => {
   websocket.send(
     JSON.stringify({
-      type: "text",
-      detail: "CODE_AC_ENTER"
+      type: 'text',
+      detail: 'CODE_AC_ENTER',
     })
   );
 };
@@ -1021,8 +1019,8 @@ const openDriver = () => {
   driverLoading.value = true;
   websocket.send(
     JSON.stringify({
-      type: "debug",
-      detail: "openDriver"
+      type: 'debug',
+      detail: 'openDriver',
     })
   );
 };
@@ -1030,12 +1028,12 @@ const closeDriver = () => {
   isDriverFinish.value = false;
   websocket.send(
     JSON.stringify({
-      type: "debug",
-      detail: "closeDriver"
+      type: 'debug',
+      detail: 'closeDriver',
     })
   );
   ElMessage.success({
-    message: $t("androidRemoteTS.code.closeDriverMessage")
+    message: $t('androidRemoteTS.code.closeDriverMessage'),
   });
 };
 const getCurLocation = () => {
@@ -1069,11 +1067,11 @@ const getCurLocation = () => {
   }
   inputBoxStyle.value = {
     left: `${event.clientX - rect.left}px`,
-    top: `${event.clientY - rect.top}px`
+    top: `${event.clientY - rect.top}px`,
   };
   return {
     x,
-    y
+    y,
   };
 };
 const getCurLocationForAdb = () => {
@@ -1106,25 +1104,23 @@ const getCurLocationForAdb = () => {
   }
   inputBoxStyle.value = {
     left: `${event.clientX - rect.left}px`,
-    top: `${event.clientY - rect.top}px`
+    top: `${event.clientY - rect.top}px`,
   };
   return {
     x,
-    y
+    y,
   };
 };
 const mouseup = (event) => {
   if (!isFixTouch) {
     if (isPress) {
       isPress = false;
-      let msg = {
-        type: "touch",
-        detail: "up\n"
+      const msg = {
+        type: 'touch',
+        detail: 'up\n',
       };
       insertRecordActions(msg);
-      websocket.send(
-        JSON.stringify(msg)
-      );
+      websocket.send(JSON.stringify(msg));
       inputBox.value.focus();
     }
   } else {
@@ -1135,9 +1131,9 @@ const mouseup = (event) => {
       if (!isLongPress) {
         websocket.send(
           JSON.stringify({
-            type: "debug",
-            detail: "tap",
-            point: `${x},${y}`
+            type: 'debug',
+            detail: 'tap',
+            point: `${x},${y}`,
           })
         );
         inputBox.value.focus();
@@ -1145,10 +1141,10 @@ const mouseup = (event) => {
     } else {
       websocket.send(
         JSON.stringify({
-          type: "debug",
-          detail: "swipe",
+          type: 'debug',
+          detail: 'swipe',
           pointA: `${moveX},${moveY}`,
-          pointB: `${x},${y}`
+          pointB: `${x},${y}`,
         })
       );
       inputBox.value.focus();
@@ -1162,14 +1158,12 @@ const mouseleave = () => {
     isLongPress = false;
   } else if (isPress) {
     isPress = false;
-    let msg = {
-      type: "touch",
-      detail: "up\n"
+    const msg = {
+      type: 'touch',
+      detail: 'up\n',
     };
     insertRecordActions(msg);
-    websocket.send(
-      JSON.stringify(msg)
-    );
+    websocket.send(JSON.stringify(msg));
   }
 };
 const mousedown2 = () => {
@@ -1177,7 +1171,6 @@ const mousedown2 = () => {
   setTimeout(() => {
     getElement();
   }, 1500);
-
 };
 const mousedown = (event) => {
   // alert("qwerqwerqwer")
@@ -1186,15 +1179,13 @@ const mousedown = (event) => {
     // 安卓高版本
     const { x, y } = getCurLocation();
     isPress = true;
-    let msg = {
-      type: "touch",
-      detail: `down ${x} ${y}\n`
+    const msg = {
+      type: 'touch',
+      detail: `down ${x} ${y}\n`,
     };
     insertRecordActions(msg);
 
-    websocket.send(
-      JSON.stringify(msg)
-    );
+    websocket.send(JSON.stringify(msg));
 
     // alert(x +"adfasdf" +y)
   } else {
@@ -1207,9 +1198,9 @@ const mousedown = (event) => {
       if (time >= 1000 && isLongPress === false) {
         websocket.send(
           JSON.stringify({
-            type: "debug",
-            detail: "longPress",
-            point: `${moveX},${moveY}`
+            type: 'debug',
+            detail: 'longPress',
+            point: `${moveX},${moveY}`,
           })
         );
         isLongPress = true;
@@ -1224,14 +1215,12 @@ const mousemove = (event) => {
         mouseMoveTime++;
       } else {
         const { x, y } = getCurLocation();
-        let msg = {
-          type: "touch",
-          detail: `move ${x} ${y}\n`
+        const msg = {
+          type: 'touch',
+          detail: `move ${x} ${y}\n`,
         };
         insertRecordActions(msg);
-        websocket.send(
-          JSON.stringify(msg)
-        );
+        websocket.send(JSON.stringify(msg));
         mouseMoveTime = 0;
       }
     }
@@ -1239,7 +1228,7 @@ const mousemove = (event) => {
 };
 const touchstart = async (event) => {
   // alert(JSON.stringify(event))
-  const debugPic = document.getElementById("debugPic");
+  const debugPic = document.getElementById('debugPic');
   const rect = debugPic.getBoundingClientRect();
   let x;
   let y;
@@ -1265,9 +1254,8 @@ const touchstart = async (event) => {
       findMinSize(findElementByPoint(elementData.value, x, y))
     );
   });
-  console.error(tree.value.getCurrentNode())
+  console.error(tree.value.getCurrentNode());
   await handleNodeClick(tree.value.getCurrentNode());
-
 };
 const findMinSize = (data) => {
   if (data.length === 0) {
@@ -1292,22 +1280,22 @@ const findElementByPoint = (ele, x, y) => {
   for (const i in ele) {
     const eleStartX = ele[i].detail.bStart.substring(
       0,
-      ele[i].detail.bStart.indexOf(",")
+      ele[i].detail.bStart.indexOf(',')
     );
     const eleStartY = ele[i].detail.bStart.substring(
-      ele[i].detail.bStart.indexOf(",") + 1
+      ele[i].detail.bStart.indexOf(',') + 1
     );
     const eleEndX = ele[i].detail.bEnd.substring(
       0,
-      ele[i].detail.bEnd.indexOf(",")
+      ele[i].detail.bEnd.indexOf(',')
     );
     const eleEndY = ele[i].detail.bEnd.substring(
-      ele[i].detail.bEnd.indexOf(",") + 1
+      ele[i].detail.bEnd.indexOf(',') + 1
     );
     if (x >= eleStartX && x <= eleEndX && y >= eleStartY && y <= eleEndY) {
       result.push({
         ele: ele[i],
-        size: (eleEndY - eleStartY) * (eleEndX - eleStartX)
+        size: (eleEndY - eleStartY) * (eleEndX - eleStartX),
       });
     }
     if (ele[i].children) {
@@ -1324,29 +1312,30 @@ const handleNodeClick = (data) => {
   // console.error(JSON.toString(data))
   // [{"type":"debug","detail":"checkLocation","element":"//android.widget.RelativeLayout[@text='']","eleType":"xpath","pwd":""}]
   handleNodeClick2(data);
-  if (recordEleType.value == 1 && data !== null && data.detail.text !== '' ) {
-    let v = "//" + data.detail.class + "[@text='" + data.detail.text + "']";
+  if (recordEleType.value == 1 && data !== null) {
+    const v = `//${data.detail.class}[@text='${data.detail.text}']`;
     //   异步执行 向后台传数据
-    recordEleArr.value = [{
-      "type": "debug",
-      "detail": "checkLocation",
-      "element": v,
-      "eleType": "xpath",
-      "pwd": ""
-    }];
+    recordEleArr.value = [
+      {
+        type: 'debug',
+        detail: 'checkLocation',
+        element: v,
+        eleType: 'xpath',
+        pwd: '',
+      },
+    ];
     // endRecordEle()
     // 执行跳转 刷新
     checkLocation({
-      eleType: "xpath",
-      eleValue: v
+      eleType: 'xpath',
+      eleValue: v,
     });
     // setTimeout(() => {  getElement() }, 3000);
-  } else{
+  } else {
     ElMessage.error({
-      message: "未获取到元素",
+      message: '未获取到元素',
     });
   }
-
 };
 
 const handleNodeClick2 = (data) => {
@@ -1357,18 +1346,18 @@ const handleNodeClick2 = (data) => {
   }
 };
 const print = (data) => {
-  const canvas = document.getElementById("debugPic");
-  const g = canvas.getContext("2d");
+  const canvas = document.getElementById('debugPic');
+  const g = canvas.getContext('2d');
   g.clearRect(0, 0, canvas.width, canvas.height);
   const eleStartX = data.detail.bStart.substring(
     0,
-    data.detail.bStart.indexOf(",")
+    data.detail.bStart.indexOf(',')
   );
   const eleStartY = data.detail.bStart.substring(
-    data.detail.bStart.indexOf(",") + 1
+    data.detail.bStart.indexOf(',') + 1
   );
-  const eleEndX = data.detail.bEnd.substring(0, data.detail.bEnd.indexOf(","));
-  const eleEndY = data.detail.bEnd.substring(data.detail.bEnd.indexOf(",") + 1);
+  const eleEndX = data.detail.bEnd.substring(0, data.detail.bEnd.indexOf(','));
+  const eleEndY = data.detail.bEnd.substring(data.detail.bEnd.indexOf(',') + 1);
   const a = Math.round(Math.random() * 255);
   const b = Math.round(Math.random() * 255);
   const c = Math.round(Math.random() * 255);
@@ -1392,74 +1381,74 @@ const print = (data) => {
 const searchDevice = () => {
   websocket.send(
     JSON.stringify({
-      type: "find"
+      type: 'find',
     })
   );
 };
 const startProxy = () => {
   websocket.send(
     JSON.stringify({
-      type: "proxy"
+      type: 'proxy',
     })
   );
 };
 const installCert = () => {
   websocket.send(
     JSON.stringify({
-      type: "installCert"
+      type: 'installCert',
     })
   );
 };
 const openApp = (pkg) => {
   websocket.send(
     JSON.stringify({
-      type: "debug",
-      detail: "openApp",
-      pkg
+      type: 'debug',
+      detail: 'openApp',
+      pkg,
     })
   );
 };
 const killApp = (pkg) => {
   websocket.send(
     JSON.stringify({
-      type: "debug",
-      detail: "killApp",
-      pkg
+      type: 'debug',
+      detail: 'killApp',
+      pkg,
     })
   );
   ElMessage.success({
-    message: $t("androidRemoteTS.code.killMsg")
+    message: $t('androidRemoteTS.code.killMsg'),
   });
 };
 const refreshAppList = () => {
   appList.value = [];
   ElMessage.success({
-    message: $t("androidRemoteTS.loadIng")
+    message: $t('androidRemoteTS.loadIng'),
   });
   terminalWebsocket.send(
     JSON.stringify({
-      type: "appList"
+      type: 'appList',
     })
   );
 };
 const clearProxy = () => {
   ElMessage.success({
-    message: $t("androidRemoteTS.messageTwo")
+    message: $t('androidRemoteTS.messageTwo'),
   });
   websocket.send(
     JSON.stringify({
-      type: "clearProxy"
+      type: 'clearProxy',
     })
   );
 };
 const uninstallApp = (pkg) => {
   ElMessage.success({
-    message: $t("androidRemoteTS.startUninstall")
+    message: $t('androidRemoteTS.startUninstall'),
   });
   websocket.send(
     JSON.stringify({
-      type: "uninstallApp",
-      detail: pkg
+      type: 'uninstallApp',
+      detail: pkg,
     })
   );
 };
@@ -1467,9 +1456,9 @@ const getEleScreen = (xpath) => {
   elementScreenLoading.value = true;
   websocket.send(
     JSON.stringify({
-      type: "debug",
-      detail: "eleScreen",
-      xpath
+      type: 'debug',
+      detail: 'eleScreen',
+      xpath,
     })
   );
 };
@@ -1484,38 +1473,38 @@ const setStepLog = (data) => {
 };
 const runStep = () => {
   debugLoading.value = true;
-  activeTab2.value = "log";
+  activeTab2.value = 'log';
   websocket.send(
     JSON.stringify({
-      type: "debug",
-      detail: "runStep",
+      type: 'debug',
+      detail: 'runStep',
       caseId: testCase.value.id,
-      pwd: device.value.password
+      pwd: device.value.password,
     })
   );
 };
 const runStepRecord = () => {
   debugLoading.value = true;
-  activeTab2Record.value = "log";
+  activeTab2Record.value = 'log';
   websocket.send(
     JSON.stringify({
-      type: "debug",
-      detail: "runStep",
+      type: 'debug',
+      detail: 'runStep',
       caseId: testCaseRecord.value.id,
-      pwd: device.value.password
+      pwd: device.value.password,
     })
   );
 };
 
 const runStepRecordEle = () => {
   debugLoading.value = true;
-  activeTab2RecordEle.value = "log";
+  activeTab2RecordEle.value = 'log';
   websocket.send(
     JSON.stringify({
-      type: "debug",
-      detail: "runStep",
+      type: 'debug',
+      detail: 'runStep',
       caseId: testCaseRecordEle.value.id,
-      pwd: device.value.password
+      pwd: device.value.password,
     })
   );
 };
@@ -1529,12 +1518,12 @@ const checkLocation = (data) => {
 // 运行元素
 const checkLocation2 = (data) => {
   console.error(data.eleValue);
-  let v = {
-    type: "debug",
-    detail: "checkLocation",
+  const v = {
+    type: 'debug',
+    detail: 'checkLocation',
     element: data.eleValue,
     eleType: data.eleType,
-    pwd: device.value.password
+    pwd: device.value.password,
   };
 
   if (recordEleType.value == 1) {
@@ -1545,21 +1534,18 @@ const checkLocation2 = (data) => {
     endRecordEle();
   }
 
-
   checkElementLoading.value = true;
-  websocket.send(
-    JSON.stringify(v)
-  );
+  websocket.send(JSON.stringify(v));
 };
 const stopStep = () => {
   debugLoading.value = false;
   websocket.send(
     JSON.stringify({
-      type: "debug",
-      detail: "stopStep",
+      type: 'debug',
+      detail: 'stopStep',
       udId: device.value.udId,
       caseId: testCase.value.id,
-      pf: device.value.platform
+      pf: device.value.platform,
     })
   );
 };
@@ -1567,35 +1553,35 @@ const stopStepRecord = () => {
   debugLoadingRecord.value = false;
   websocket.send(
     JSON.stringify({
-      type: "debug",
-      detail: "stopStep",
+      type: 'debug',
+      detail: 'stopStep',
       udId: device.value.udId,
       caseId: testCaseRecord.value.id,
-      pf: device.value.platform
+      pf: device.value.platform,
     })
   );
 };
 const pressKey = (keyNum) => {
   websocket.send(
     JSON.stringify({
-      type: "keyEvent",
-      detail: keyNum
+      type: 'keyEvent',
+      detail: keyNum,
     })
   );
 };
 const batteryDisconnect = () => {
   websocket.send(
     JSON.stringify({
-      type: "battery",
-      detail: 0
+      type: 'battery',
+      detail: 0,
     })
   );
 };
 const batteryReset = () => {
   websocket.send(
     JSON.stringify({
-      type: "battery",
-      detail: 1
+      type: 'battery',
+      detail: 1,
     })
   );
 };
@@ -1603,23 +1589,23 @@ const changePic = (type) => {
   loading.value = true;
   let pic;
   switch (type) {
-    case $t("androidRemoteTS.low"):
-      pic = "low";
+    case $t('androidRemoteTS.low'):
+      pic = 'low';
       break;
-    case $t("androidRemoteTS.middle"):
-      pic = "middle";
+    case $t('androidRemoteTS.middle'):
+      pic = 'middle';
       break;
-    case $t("androidRemoteTS.high"):
-      pic = "high";
+    case $t('androidRemoteTS.high'):
+      pic = 'high';
       break;
-    case "fixed":
-      pic = "fixed";
+    case 'fixed':
+      pic = 'fixed';
       break;
   }
   screenWebsocket.send(
     JSON.stringify({
-      type: "pic",
-      detail: pic
+      type: 'pic',
+      detail: pic,
     })
   );
 };
@@ -1630,50 +1616,50 @@ const changeScreenMode = (type, isInit) => {
     screenMode.value = type;
     oldBlob = undefined;
   }
-  if (type === "Minicap") {
-    touchWrapper = document.getElementById("canvas");
+  if (type === 'Minicap') {
+    touchWrapper = document.getElementById('canvas');
   } else {
     oldBlob = undefined; // 清除记录
-    touchWrapper = document.getElementById("scrcpy-video");
+    touchWrapper = document.getElementById('scrcpy-video');
   }
   // 储存最后模式
-  window.localStorage.setItem("screenMode", type);
+  window.localStorage.setItem('screenMode', type);
 };
-const pullPath = ref("");
+const pullPath = ref('');
 const pullLoading = ref(false);
-const pullResult = ref("");
+const pullResult = ref('');
 const pullFile = () => {
-  pullResult.value = "";
+  pullResult.value = '';
   pullLoading.value = true;
   websocket.send(
     JSON.stringify({
-      type: "pullFile",
-      path: pullPath.value
+      type: 'pullFile',
+      path: pullPath.value,
     })
   );
 };
 const fileLoading = ref(false);
-const upLoadFilePath = ref("");
-const pushPath = ref("");
+const upLoadFilePath = ref('');
+const pushPath = ref('');
 const pushLoading = ref(false);
 const pushFile = () => {
   pushLoading.value = true;
   websocket.send(
     JSON.stringify({
-      type: "pushFile",
+      type: 'pushFile',
       file: upLoadFilePath.value,
-      path: pushPath.value
+      path: pushPath.value,
     })
   );
 };
 const uploadFile = (content) => {
   fileLoading.value = true;
   const formData = new FormData();
-  formData.append("file", content.file);
-  formData.append("type", "packageFiles");
+  formData.append('file', content.file);
+  formData.append('type', 'packageFiles');
   axios
-    .post("/folder/upload", formData, {
-      headers: { "Content-type": "multipart/form-data" }
+    .post('/folder/upload', formData, {
+      headers: { 'Content-type': 'multipart/form-data' },
     })
     .then((resp) => {
       fileLoading.value = false;
@@ -1683,36 +1669,36 @@ const uploadFile = (content) => {
     });
 };
 const beforeAvatarUpload = (file) => {
-  if (file.name.endsWith(".jpg") || file.name.endsWith(".png")) {
+  if (file.name.endsWith('.jpg') || file.name.endsWith('.png')) {
     return true;
   }
   ElMessage.error({
-    message: $t("androidRemoteTS.failErr")
+    message: $t('androidRemoteTS.failErr'),
   });
   return false;
 };
 const beforeAvatarUpload2 = (file) => {
-  if (file.name.endsWith(".apk")) {
+  if (file.name.endsWith('.apk')) {
     return true;
   }
   ElMessage.error({
-    message: $t("androidRemoteTS.failErr")
+    message: $t('androidRemoteTS.failErr'),
   });
   return false;
 };
 const limitOut = () => {
   ElMessage.error({
-    message: $t("androidRemoteTS.addOne")
+    message: $t('androidRemoteTS.addOne'),
   });
 };
 const uploadPackage = (content) => {
   uploadLoading.value = true;
   const formData = new FormData();
-  formData.append("file", content.file);
-  formData.append("type", "packageFiles");
+  formData.append('file', content.file);
+  formData.append('type', 'packageFiles');
   axios
-    .post("/folder/upload", formData, {
-      headers: { "Content-type": "multipart/form-data" }
+    .post('/folder/upload', formData, {
+      headers: { 'Content-type': 'multipart/form-data' },
     })
     .then((resp) => {
       uploadLoading.value = false;
@@ -1723,16 +1709,16 @@ const uploadPackage = (content) => {
 };
 const uploadScan = (content) => {
   const formData = new FormData();
-  formData.append("file", content.file);
-  formData.append("type", "imageFiles");
+  formData.append('file', content.file);
+  formData.append('type', 'imageFiles');
   axios
-    .post("/folder/upload", formData, {
-      headers: { "Content-type": "multipart/form-data" }
+    .post('/folder/upload', formData, {
+      headers: { 'Content-type': 'multipart/form-data' },
     })
     .then((resp) => {
       if (resp.code === 2000) {
         ElMessage.success({
-          message: resp.message
+          message: resp.message,
         });
         scan(resp.data);
       }
@@ -1741,30 +1727,30 @@ const uploadScan = (content) => {
 const scan = (url) => {
   websocket.send(
     JSON.stringify({
-      type: "scan",
-      url
+      type: 'scan',
+      url,
     })
   );
 };
 const sendText = () => {
   websocket.send(
     JSON.stringify({
-      type: "text",
-      detail: "CODE_AC_CLEAN"
+      type: 'text',
+      detail: 'CODE_AC_CLEAN',
     })
   );
 };
 const startKeyboard = () => {
   websocket.send(
     JSON.stringify({
-      type: "startKeyboard"
+      type: 'startKeyboard',
     })
   );
 };
 const stopKeyboard = () => {
   websocket.send(
     JSON.stringify({
-      type: "stopKeyboard"
+      type: 'stopKeyboard',
     })
   );
 };
@@ -1772,13 +1758,13 @@ const install = (apk) => {
   if (apk.length > 0) {
     websocket.send(
       JSON.stringify({
-        type: "debug",
-        detail: "install",
-        apk
+        type: 'debug',
+        detail: 'install',
+        apk,
       })
     );
     ElMessage.success({
-      message: $t("androidRemoteTS.startInstall")
+      message: $t('androidRemoteTS.startInstall'),
     });
   }
 };
@@ -1793,35 +1779,36 @@ const endRecord = () => {
   if (recordActions.value.length > 0) {
     console.log(JSON.stringify(recordActions.value));
     endRecordLoading.value = true;
-    let para = {
-      "recordActions": recordActions.value,
-      "testCaseId": testCaseRecord.value.id,
-      "projectId": projectRecord.value.id,
+    const para = {
+      recordActions: recordActions.value,
+      testCaseId: testCaseRecord.value.id,
+      projectId: projectRecord.value.id,
       // "moduleId": moduleRecord.value.id
     };
-    axios.post("/controller/testCases/saveRecordActions", para).then((resp) => {
-      endRecordLoading.value = false;
-      if (resp.code === 2000) {
-        console.log(JSON.stringify(recordActions.value));
-      }
-      flushStep.value++;
-    }).catch(error => {
-      console.error(error);
-      endRecordLoading.value = false;
-    });
+    axios
+      .post('/controller/testCases/saveRecordActions', para)
+      .then((resp) => {
+        endRecordLoading.value = false;
+        if (resp.code === 2000) {
+          console.log(JSON.stringify(recordActions.value));
+        }
+        flushStep.value++;
+      })
+      .catch((error) => {
+        console.error(error);
+        endRecordLoading.value = false;
+      });
     recordActions.value = [];
   }
 
-  console.error("flushStep.value {}", flushStep);
+  console.error('flushStep.value {}', flushStep);
 };
 
 // recordActions 把用例的操作插入到坐标数组
 const insertRecordActions = (data) => {
-
   if (startRecordFlag.value) {
     recordActions.value.push(data);
     console.log(JSON.stringify(recordActions.value));
-
   }
 };
 
@@ -1835,36 +1822,37 @@ const endRecordEle = () => {
   if (recordEleArr.value.length > 0) {
     console.log(JSON.stringify(recordEleArr.value));
     endRecordEleLoading.value = true;
-    let para = {
-      "elements": recordEleArr.value,
-      "testCaseId": testCaseRecordEle.value.id,
-      "projectId": projectRecordEle.value.id,
+    const para = {
+      elements: recordEleArr.value,
+      testCaseId: testCaseRecordEle.value.id,
+      projectId: projectRecordEle.value.id,
       // "moduleId": moduleRecordEle.value.id
     };
     // todo: 后端增加接口 解析录制的元素
-    axios.post("/controller/testCases/saveRecordElements", para).then((resp) => {
-      endRecordEleLoading.value = false;
-      if (resp.code === 2000) {
-        console.log(JSON.stringify(recordEleArr.value));
-      }
-      flushStep.value++;
-    }).catch(error => {
-      console.error(error);
-      endRecordEleLoading.value = false;
-    });
+    axios
+      .post('/controller/testCases/saveRecordElements', para)
+      .then((resp) => {
+        endRecordEleLoading.value = false;
+        if (resp.code === 2000) {
+          console.log(JSON.stringify(recordEleArr.value));
+        }
+        flushStep.value++;
+      })
+      .catch((error) => {
+        console.error(error);
+        endRecordEleLoading.value = false;
+      });
     recordEleArr.value = [];
   }
 
-  console.error("flushStep.value {}", flushStep);
+  console.error('flushStep.value {}', flushStep);
 };
 
 // recordActions 把用例的操作插入到坐标数组
 const insertRecordActionsEle = (data) => {
-
   if (startRecordEleFlag.value) {
     recordEleArr.value.push(data);
     console.log(JSON.stringify(recordEleArr.value));
-
   }
 };
 
@@ -1874,11 +1862,11 @@ const getElement = () => {
   setImgData();
   websocket.send(
     JSON.stringify({
-      type: "debug",
-      detail: "tree",
+      type: 'debug',
+      detail: 'tree',
       isMulti: isMultiWindows.value,
       isIgnore: isIgnore.value,
-      isVisible: isVisible.value
+      isVisible: isVisible.value,
     })
   );
 };
@@ -1886,10 +1874,10 @@ const getPoco = (engine, port) => {
   pocoLoading.value = true;
   websocket.send(
     JSON.stringify({
-      type: "debug",
-      detail: "poco",
+      type: 'debug',
+      detail: 'poco',
       engine,
-      port
+      port,
     })
   );
 };
@@ -1897,7 +1885,7 @@ const getWebViewForward = () => {
   webViewLoading.value = true;
   websocket.send(
     JSON.stringify({
-      type: "forwardView"
+      type: 'forwardView',
     })
   );
 };
@@ -1926,18 +1914,18 @@ onBeforeUnmount(() => {
 });
 const getDeviceById = (id) => {
   loading.value = true;
-  axios.get("/controller/devices", { params: { id } }).then((resp) => {
+  axios.get('/controller/devices', { params: { id } }).then((resp) => {
     if (resp.code === 2000) {
       device.value = resp.data;
-      if (device.value.status !== "ONLINE") {
+      if (device.value.status !== 'ONLINE') {
         ElMessage.error({
-          message: $t("androidRemoteTS.deviceFail")
+          message: $t('androidRemoteTS.deviceFail'),
         });
-        router.replace("/Index/Devices");
+        router.replace('/Index/Devices');
         return;
       }
       axios
-        .get("/controller/agents", { params: { id: device.value.agentId } })
+        .get('/controller/agents', { params: { id: device.value.agentId } })
         .then((resp) => {
           if (resp.code === 2000) {
             agent.value = resp.data;
@@ -1959,27 +1947,27 @@ let audioPlayer = null;
 const isConnectAudio = ref(false);
 const initAudioPlayer = () => {
   audioPlayer = new AudioProcessor({
-    node: "audio-player",
+    node: 'audio-player',
     wsUrl: `ws://${agent.value.host}:${agent.value.port}/websockets/audio/${agent.value.secretKey}/${device.value.udId}`,
     onReady() {
       isConnectAudio.value = true;
-    }
+    },
   });
-  audioPlayer.ws.onError(function() {
+  audioPlayer.ws.onError(function () {
     destroyAudio();
   });
 };
 const playAudio = () => {
   if (audioPlayer) {
     ElMessage.warning({
-      message: $t("androidRemoteTS.remoteAudio")
+      message: $t('androidRemoteTS.remoteAudio'),
     });
     return;
   }
   initAudioPlayer();
   audioPlayer.onPlay();
   ElMessage.success({
-    message: $t("androidRemoteTS.audio")
+    message: $t('androidRemoteTS.audio'),
   });
 };
 const destroyAudio = () => {
@@ -1987,19 +1975,19 @@ const destroyAudio = () => {
   audioPlayer = null;
   isConnectAudio.value = false;
   ElMessage.info({
-    message: $t("androidRemoteTS.audioFail")
+    message: $t('androidRemoteTS.audioFail'),
   });
 };
 const resetAudioPlayer = () => {
   audioPlayer.jmuxer.reset();
   audioPlayer.onPlay();
   ElMessage.success({
-    message: $t("androidRemoteTS.audioSuccess")
+    message: $t('androidRemoteTS.audioSuccess'),
   });
 };
 const getProjectList = () => {
-  axios.get("/controller/projects/list").then((resp) => {
-    store.commit("saveProjectList", resp.data);
+  axios.get('/controller/projects/list').then((resp) => {
+    store.commit('saveProjectList', resp.data);
   });
 };
 let activeTime = 0;
@@ -2011,7 +1999,7 @@ onMounted(() => {
     getProjectList();
   }
   getDeviceById(route.params.deviceId);
-  store.commit("autoChangeCollapse");
+  store.commit('autoChangeCollapse');
   getRemoteTimeout();
   getIdleTimeout();
   activeTime = new Date().getTime();
@@ -2028,7 +2016,7 @@ onMounted(() => {
 const remoteTimeout = ref(0);
 const ticker = ref(0);
 const getRemoteTimeout = () => {
-  axios.get("/controller/confList/getRemoteTimeout").then((resp) => {
+  axios.get('/controller/confList/getRemoteTimeout').then((resp) => {
     remoteTimeout.value = resp.data;
     setInterval(() => {
       ticker.value += 1;
@@ -2037,7 +2025,7 @@ const getRemoteTimeout = () => {
 };
 const idleTimeout = ref(0);
 const getIdleTimeout = () => {
-  axios.get("/controller/confList/getIdleTimeout").then((resp) => {
+  axios.get('/controller/confList/getIdleTimeout').then((resp) => {
     idleTimeout.value = resp.data;
   });
 };
@@ -2090,7 +2078,7 @@ const checkAlive = () => {
       </el-form-item>
       <div style="text-align: center">
         <el-button size="small" type="primary" @click="saveEle"
-        >{{ $t("androidRemoteTS.code.saveEle") }}
+          >{{ $t('androidRemoteTS.code.saveEle') }}
         </el-button>
       </div>
     </el-form>
@@ -2165,10 +2153,10 @@ const checkAlive = () => {
                     <span>{{ device.name }}</span>
                   </el-form-item>
                   <el-form-item :label="$t('devices.detail.model')">
-                    <span>{{ device["model"] }}</span>
+                    <span>{{ device['model'] }}</span>
                   </el-form-item>
                   <el-form-item :label="$t('devices.detail.udId')">
-                    <span>{{ device["udId"] }}</span>
+                    <span>{{ device['udId'] }}</span>
                   </el-form-item>
                   <el-form-item :label="$t('devices.form.system')">
                     <img
@@ -2187,13 +2175,13 @@ const checkAlive = () => {
                   <el-form-item
                     :label="$t('androidRemoteTS.code.systemVersion')"
                   >
-                    <span>{{ device["version"] }}</span>
+                    <span>{{ device['version'] }}</span>
                   </el-form-item>
                   <el-form-item :label="$t('devices.detail.size')">
-                    <span>{{ device["size"] }}</span>
+                    <span>{{ device['size'] }}</span>
                   </el-form-item>
                   <el-form-item :label="$t('devices.detail.cpu')">
-                    <span>{{ device["cpu"] }}</span>
+                    <span>{{ device['cpu'] }}</span>
                   </el-form-item>
                   <el-form-item :label="$t('devices.filter.manufacturer')">
                     <img
@@ -2805,7 +2793,7 @@ const checkAlive = () => {
               <el-col :span="8">
                 <el-card>
                   <template #header>
-                    <strong>{{ $t("androidRemoteTS.code.inputText") }}</strong>
+                    <strong>{{ $t('androidRemoteTS.code.inputText') }}</strong>
                   </template>
                   <el-alert
                     :title="$t('androidRemoteTS.code.keyboard')"
@@ -2816,13 +2804,13 @@ const checkAlive = () => {
                   </el-alert>
                   <div style="text-align: center; margin-top: 12px">
                     <el-button size="mini" type="primary" @click="sendText"
-                    >{{ $t("androidRemoteTS.code.clear") }}
+                      >{{ $t('androidRemoteTS.code.clear') }}
                     </el-button>
                     <el-button size="mini" type="primary" @click="startKeyboard"
-                    >{{ $t("androidRemoteTS.code.startKeyboard") }}
+                      >{{ $t('androidRemoteTS.code.startKeyboard') }}
                     </el-button>
                     <el-button size="mini" type="primary" @click="stopKeyboard"
-                    >{{ $t("androidRemoteTS.code.stopKeyboard") }}
+                      >{{ $t('androidRemoteTS.code.stopKeyboard') }}
                     </el-button>
                   </div>
                 </el-card>
@@ -2846,15 +2834,15 @@ const checkAlive = () => {
                           @click="copy('adb connect ' + remoteAdbUrl)"
                         >
                           <strong style="color: #f2f6fc"
-                          >adb connect {{ remoteAdbUrl }}</strong
+                            >adb connect {{ remoteAdbUrl }}</strong
                           >
                         </el-card>
                       </div>
                       <div v-else>
                         <el-card>
                           <strong>{{
-                              $t("androidRemoteTS.code.noAgent")
-                            }}</strong>
+                            $t('androidRemoteTS.code.noAgent')
+                          }}</strong>
                         </el-card>
                       </div>
                     </div>
@@ -2864,7 +2852,7 @@ const checkAlive = () => {
               <el-col :span="8">
                 <el-card>
                   <template #header>
-                    <strong>{{ $t("projectIndexTS.code.other") }}</strong>
+                    <strong>{{ $t('projectIndexTS.code.other') }}</strong>
                   </template>
                   <div style="text-align: center">
                     <div style="margin: 10px 0px">
@@ -2874,14 +2862,14 @@ const checkAlive = () => {
                         :disabled="isDriverFinish"
                         :loading="driverLoading"
                         @click="openDriver"
-                      >{{ $t("androidRemoteTS.code.UIAutomator2ServerInit") }}
+                        >{{ $t('androidRemoteTS.code.UIAutomator2ServerInit') }}
                       </el-button>
                       <el-button
                         size="mini"
                         type="danger"
                         :disabled="!isDriverFinish"
                         @click="closeDriver"
-                      >{{ $t("androidRemoteTS.code.closeDriver") }}
+                        >{{ $t('androidRemoteTS.code.closeDriver') }}
                       </el-button>
                       <div style="margin-top: 8px">
                         Status:
@@ -2890,7 +2878,7 @@ const checkAlive = () => {
                             isDriverFinish ? 'color:#67C23A' : 'color:#606266'
                           "
                         >
-                          {{ isDriverFinish ? "Connected" : "Diconnected" }}
+                          {{ isDriverFinish ? 'Connected' : 'Diconnected' }}
                         </span>
                       </div>
                     </div>
@@ -2900,7 +2888,7 @@ const checkAlive = () => {
               <el-col :span="12" style="margin-top: 15px">
                 <el-card>
                   <template #header>
-                    <strong>{{ $t("IOSRemote.clipboard.operate") }}</strong>
+                    <strong>{{ $t('IOSRemote.clipboard.operate') }}</strong>
                   </template>
                   <el-input
                     v-model="paste"
@@ -2916,10 +2904,10 @@ const checkAlive = () => {
                       type="primary"
                       @click="setPasteboard(paste)"
                     >
-                      {{ $t("IOSRemote.clipboard.send") }}
+                      {{ $t('IOSRemote.clipboard.send') }}
                     </el-button>
                     <el-button size="mini" type="primary" @click="getPasteboard"
-                    >{{ $t("IOSRemote.clipboard.getText") }}
+                      >{{ $t('IOSRemote.clipboard.getText') }}
                     </el-button>
                   </div>
                 </el-card>
@@ -2928,8 +2916,8 @@ const checkAlive = () => {
                 <el-card>
                   <template #header>
                     <strong>{{
-                        $t("androidRemoteTS.code.fileTransfer")
-                      }}</strong>
+                      $t('androidRemoteTS.code.fileTransfer')
+                    }}</strong>
                   </template>
                   <div style="text-align: center">
                     <el-tabs type="border-card" stretch>
@@ -2945,8 +2933,8 @@ const checkAlive = () => {
                         >
                           <i class="el-icon-upload"></i>
                           <div class="el-upload__text">
-                            {{ $t("androidRemoteTS.code.messageFive") }}
-                            <em>{{ $t("devices.detail.uploadImg") }}</em>
+                            {{ $t('androidRemoteTS.code.messageFive') }}
+                            <em>{{ $t('devices.detail.uploadImg') }}</em>
                           </div>
                         </el-upload>
                         <div style="display: flex; margin-top: 5px">
@@ -2967,7 +2955,7 @@ const checkAlive = () => {
                               upLoadFilePath.length === 0
                             "
                             @click="pushFile"
-                          >Push
+                            >Push
                           </el-button>
                         </div>
                       </el-tab-pane>
@@ -2984,7 +2972,7 @@ const checkAlive = () => {
                           :loading="pullLoading"
                           :disabled="pullPath.length === 0"
                           @click="pullFile"
-                        >Pull
+                          >Pull
                         </el-button>
                         <a
                           v-if="pullResult.length !== 0"
@@ -2997,7 +2985,7 @@ const checkAlive = () => {
                             size="mini"
                             type="success"
                           >
-                            {{ $t("androidRemoteTS.code.installFile") }}
+                            {{ $t('androidRemoteTS.code.installFile') }}
                           </el-button>
                         </a>
                       </el-tab-pane>
@@ -3024,12 +3012,12 @@ const checkAlive = () => {
                           >
                             <i class="el-icon-upload"></i>
                             <div class="el-upload__text">
-                              {{ $t("androidRemoteTS.code.messageThree") }}
-                              <em>{{ $t("devices.detail.uploadImg") }}</em>
+                              {{ $t('androidRemoteTS.code.messageThree') }}
+                              <em>{{ $t('devices.detail.uploadImg') }}</em>
                             </div>
                             <template #tip>
                               <div class="el-upload__tip">
-                                {{ $t("androidRemoteTS.code.messageFour") }}
+                                {{ $t('androidRemoteTS.code.messageFour') }}
                               </div>
                             </template>
                           </el-upload>
@@ -3045,7 +3033,7 @@ const checkAlive = () => {
             <el-tabs v-model="activeIntallTab" type="border-card" stretch>
               <el-tab-pane name="pushInstallPane">
                 <template #label>
-                  <strong>{{ $t("androidRemoteTS.code.pushInstall") }}</strong>
+                  <strong>{{ $t('androidRemoteTS.code.pushInstall') }}</strong>
                 </template>
                 <div style="text-align: center">
                   <el-upload
@@ -3060,12 +3048,12 @@ const checkAlive = () => {
                   >
                     <i class="el-icon-upload"></i>
                     <div class="el-upload__text">
-                      {{ $t("androidRemoteTS.code.apkFile") }}
-                      <em>{{ $t("devices.detail.uploadImg") }}</em>
+                      {{ $t('androidRemoteTS.code.apkFile') }}
+                      <em>{{ $t('devices.detail.uploadImg') }}</em>
                     </div>
                     <template #tip>
                       <div class="el-upload__tip">
-                        {{ $t("androidRemoteTS.code.onlyAPKFile") }}
+                        {{ $t('androidRemoteTS.code.onlyAPKFile') }}
                       </div>
                     </template>
                   </el-upload>
@@ -3073,7 +3061,7 @@ const checkAlive = () => {
               </el-tab-pane>
               <el-tab-pane name="urlInstallPane">
                 <template #label>
-                  <strong>{{ $t("androidRemoteTS.code.URLInstall") }}</strong>
+                  <strong>{{ $t('androidRemoteTS.code.URLInstall') }}</strong>
                 </template>
                 <el-input
                   v-model="uploadUrl"
@@ -3087,17 +3075,17 @@ const checkAlive = () => {
                     type="primary"
                     :disabled="uploadUrl.length === 0"
                     @click="install(uploadUrl)"
-                  >{{ $t("androidRemoteTS.code.send") }}
+                    >{{ $t('androidRemoteTS.code.send') }}
                   </el-button>
                 </div>
               </el-tab-pane>
               <el-tab-pane name="linkInstallPane">
                 <template #label>
-                  <strong>{{ $t("androidRemoteTS.code.linkInstall") }}</strong>
+                  <strong>{{ $t('androidRemoteTS.code.linkInstall') }}</strong>
                 </template>
                 <span style="color: #909399; margin-right: 10px">{{
-                    $t("androidRemoteTS.code.associatedProject")
-                  }}</span>
+                  $t('androidRemoteTS.code.associatedProject')
+                }}</span>
                 <el-select
                   v-model="project"
                   size="mini"
@@ -3121,7 +3109,7 @@ const checkAlive = () => {
                         "
                         shape="square"
                       ></el-avatar>
-                      {{ item["projectName"] }}
+                      {{ item['projectName'] }}
                     </div>
                   </el-option>
                 </el-select>
@@ -3153,7 +3141,7 @@ const checkAlive = () => {
                 <el-table-column width="100" header-align="center">
                   <template #header>
                     <el-button size="mini" @click="refreshAppList"
-                    >{{ $t("androidRemoteTS.code.refresh") }}
+                      >{{ $t('androidRemoteTS.code.refresh') }}
                     </el-button>
                   </template>
                   <template #default="scope">
@@ -3223,21 +3211,21 @@ const checkAlive = () => {
                       type="primary"
                       @click="openApp(scope.row.packageName)"
                     >
-                      {{ $t("androidRemoteTS.code.open") }}
+                      {{ $t('androidRemoteTS.code.open') }}
                     </el-button>
                     <el-button
                       size="mini"
                       type="warning"
                       @click="killApp(scope.row.packageName)"
                     >
-                      {{ $t("androidRemoteTS.code.kill") }}
+                      {{ $t('androidRemoteTS.code.kill') }}
                     </el-button>
                     <el-button
                       size="mini"
                       type="danger"
                       @click="uninstallApp(scope.row.packageName)"
                     >
-                      {{ $t("androidRemoteTS.code.unInstall") }}
+                      {{ $t('androidRemoteTS.code.unInstall') }}
                     </el-button>
                   </template>
                 </el-table-column>
@@ -3253,19 +3241,19 @@ const checkAlive = () => {
           </el-tab-pane>
           <el-tab-pane :label="$t('androidRemoteTS.code.packet')" name="proxy">
             <el-button size="small" type="success" @click="startProxy"
-            >{{ $t("androidRemoteTS.code.startPacket") }}
+              >{{ $t('androidRemoteTS.code.startPacket') }}
             </el-button>
             <el-button size="small" @click="installCert"
-            >{{ $t("androidRemoteTS.code.downloadCertificate") }}
+              >{{ $t('androidRemoteTS.code.downloadCertificate') }}
             </el-button>
             <el-button size="small" @click="clearProxy"
-            >{{ $t("androidRemoteTS.code.cancelGlobalProxy") }}
+              >{{ $t('androidRemoteTS.code.cancelGlobalProxy') }}
             </el-button>
             <strong
               v-if="proxyConnPort !== 0"
               style="color: #67c23a; float: right; margin-top: 5px"
-            >{{ $t("androidRemoteTS.code.proxyConnection") }}：{{
-                agent["host"] + ":" + proxyConnPort
+              >{{ $t('androidRemoteTS.code.proxyConnection') }}：{{
+                agent['host'] + ':' + proxyConnPort
               }}</strong
             >
             <span style="float: right; display: flex; align-items: center">
@@ -3273,7 +3261,7 @@ const checkAlive = () => {
                 size="mini"
                 style="margin-right: 6px"
                 @click="getWifiList"
-              >{{ $t("androidRemoteTS.code.refresh") }}</el-button
+                >{{ $t('androidRemoteTS.code.refresh') }}</el-button
               >
               <ColorImg
                 :src="wifiLogo"
@@ -3282,10 +3270,10 @@ const checkAlive = () => {
                 :color="isConnectWifi ? '#67C23A' : '#F56C6C'"
               />
               <span style="margin-left: 6px; color: #67c23a; font-size: 16px">{{
-                  currentWifi.length > 0 && isConnectWifi
-                    ? currentWifi.replaceAll("\"", "")
-                    : " "
-                }}</span>
+                currentWifi.length > 0 && isConnectWifi
+                  ? currentWifi.replaceAll('"', '')
+                  : ' '
+              }}</span>
             </span>
             <iframe
               v-if="proxyWebPort !== 0"
@@ -3299,8 +3287,8 @@ const checkAlive = () => {
             ></iframe>
             <el-card v-else style="margin-top: 20px">
               <template #header
-              ><strong>{{
-                  $t("androidRemoteTS.code.useTeaching")
+                ><strong>{{
+                  $t('androidRemoteTS.code.useTeaching')
                 }}</strong></template
               >
               <div style="height: 300px">
@@ -3334,13 +3322,13 @@ const checkAlive = () => {
               <el-icon :size="12" style="vertical-align: middle">
                 <Camera />
               </el-icon>
-              {{ $t("androidRemoteTS.code.screenshot") }}
+              {{ $t('androidRemoteTS.code.screenshot') }}
             </el-button>
             <el-button type="danger" size="small" @click="removeScreen">
               <el-icon :size="12" style="vertical-align: middle">
                 <Delete />
               </el-icon>
-              {{ $t("androidRemoteTS.code.clean") }}
+              {{ $t('androidRemoteTS.code.clean') }}
             </el-button>
             <el-card
               v-if="screenUrls.length === 0"
@@ -3376,7 +3364,7 @@ const checkAlive = () => {
                       <el-icon :size="12" style="vertical-align: middle">
                         <Download />
                       </el-icon>
-                      {{ $t("androidRemoteTS.code.savePicture") }}
+                      {{ $t('androidRemoteTS.code.savePicture') }}
                     </el-button>
                   </div>
                 </el-card>
@@ -3420,7 +3408,7 @@ const checkAlive = () => {
                       :placeholder="$t('androidRemoteTS.code.inputSend')"
                       @keyup.enter="sendCmd"
                     >
-                      <template #prepend>{{ cmdUser + ":/ $" }}</template>
+                      <template #prepend>{{ cmdUser + ':/ $' }}</template>
                     </el-input>
                     <el-button
                       size="mini"
@@ -3428,7 +3416,7 @@ const checkAlive = () => {
                       style="margin-left: 5px"
                       type="primary"
                       @click="sendCmd"
-                    >Send
+                      >Send
                     </el-button>
                     <el-button
                       size="mini"
@@ -3436,14 +3424,14 @@ const checkAlive = () => {
                       style="margin-left: 5px"
                       type="danger"
                       @click="stopCmd"
-                    >Stop
+                      >Stop
                     </el-button>
                     <el-button
                       size="mini"
                       style="margin-left: 5px"
                       type="warning"
                       @click="clearCmd"
-                    >Clear
+                      >Clear
                     </el-button>
                   </div>
                 </el-card>
@@ -3480,28 +3468,28 @@ const checkAlive = () => {
                       style="margin-left: 5px"
                       type="primary"
                       @click="sendLogcat"
-                    >Start
+                      >Start
                     </el-button>
                     <el-button
                       size="mini"
                       style="margin-left: 5px"
                       type="warning"
                       @click="stopLogcat"
-                    >Stop
+                      >Stop
                     </el-button>
                     <el-button
                       size="mini"
                       style="margin-left: 5px"
                       type="success"
                       @click="saveLogcat"
-                    >Save
+                      >Save
                     </el-button>
                     <el-button
                       size="mini"
                       style="margin-left: 5px"
                       type="danger"
                       @click="clearLogcat"
-                    >Clear
+                      >Clear
                     </el-button>
                   </div>
                   <el-scrollbar
@@ -3541,8 +3529,8 @@ const checkAlive = () => {
                           color: #909399;
                           margin-left: 10px;
                         "
-                      >{{
-                          $t("androidRemoteTS.code.UIAutomation.testInfo")
+                        >{{
+                          $t('androidRemoteTS.code.UIAutomation.testInfo')
                         }}</strong
                       >
                       <el-button
@@ -3551,7 +3539,7 @@ const checkAlive = () => {
                         size="mini"
                         @click="removeCase"
                       >
-                        {{ $t("androidRemoteTS.code.UIAutomation.clean") }}
+                        {{ $t('androidRemoteTS.code.UIAutomation.clean') }}
                       </el-button>
                     </div>
                   </template>
@@ -3560,12 +3548,12 @@ const checkAlive = () => {
                     <el-descriptions-item
                       width="100px"
                       :label="$t('projectIndexTS.page.caseId')"
-                    >{{ testCase["id"] }}
+                      >{{ testCase['id'] }}
                     </el-descriptions-item>
                     <el-descriptions-item
                       width="100px"
                       :label="$t('projectIndexTS.page.caseName')"
-                    >{{ testCase.name }}
+                      >{{ testCase.name }}
                     </el-descriptions-item>
                     <el-descriptions-item
                       :label="
@@ -3583,7 +3571,7 @@ const checkAlive = () => {
                           "
                           shape="square"
                         ></el-avatar>
-                        {{ project["projectName"] }}
+                        {{ project['projectName'] }}
                       </div>
                     </el-descriptions-item>
                     <el-descriptions-item
@@ -3601,32 +3589,32 @@ const checkAlive = () => {
                           shape="square"
                         ></el-avatar>
                         {{
-                          testCase["platform"] === 1
-                            ? $t("publicStepTS.android")
-                            : "iOS"
+                          testCase['platform'] === 1
+                            ? $t('publicStepTS.android')
+                            : 'iOS'
                         }}
                       </div>
                     </el-descriptions-item>
                     <el-descriptions-item :label="$t('stepListViewTS.module')">
                       {{
-                        testCase["modulesDTO"] !== null
-                          ? testCase["modulesDTO"].name
-                          : ""
+                        testCase['modulesDTO'] !== null
+                          ? testCase['modulesDTO'].name
+                          : ''
                       }}
                     </el-descriptions-item>
                     <el-descriptions-item
                       :label="$t('stepListViewTS.versionName')"
-                    >{{ testCase["version"] }}
+                      >{{ testCase['version'] }}
                     </el-descriptions-item>
                     <el-descriptions-item :label="$t('stepListViewTS.designer')"
-                    >{{ testCase["designer"] }}
+                      >{{ testCase['designer'] }}
                     </el-descriptions-item>
                     <el-descriptions-item :label="$t('stepListViewTS.last')"
-                    >{{ testCase["editTime"] }}
+                      >{{ testCase['editTime'] }}
                     </el-descriptions-item>
                     <el-descriptions-item
                       :label="$t('stepListViewTS.testMessage')"
-                    >{{ testCase["des"] }}
+                      >{{ testCase['des'] }}
                     </el-descriptions-item>
                   </el-descriptions>
                 </el-collapse-item>
@@ -3659,8 +3647,8 @@ const checkAlive = () => {
             </div>
             <div v-else>
               <span style="color: #909399; margin-right: 10px">{{
-                  $t("androidRemoteTS.code.associatedProject")
-                }}</span>
+                $t('androidRemoteTS.code.associatedProject')
+              }}</span>
               <el-select
                 v-model="project"
                 size="mini"
@@ -3684,7 +3672,7 @@ const checkAlive = () => {
                       "
                       shape="square"
                     ></el-avatar>
-                    {{ item["projectName"] }}
+                    {{ item['projectName'] }}
                   </div>
                 </el-option>
               </el-select>
@@ -3696,7 +3684,7 @@ const checkAlive = () => {
                 style="position: absolute; right: 20px"
                 @click="caseList.open()"
               >
-                {{ $t("androidRemoteTS.code.addCase") }}
+                {{ $t('androidRemoteTS.code.addCase') }}
               </el-button>
               <!--              用例列表 -->
               <test-case-list
@@ -3739,7 +3727,7 @@ const checkAlive = () => {
                       <el-icon :size="12" style="vertical-align: middle">
                         <Search />
                       </el-icon>
-                      {{ $t("androidRemoteTS.code.webView.getWeb") }}
+                      {{ $t('androidRemoteTS.code.webView.getWeb') }}
                     </el-button>
                   </template>
                 </el-result>
@@ -3751,7 +3739,7 @@ const checkAlive = () => {
                   size="mini"
                   @click="getWebViewForward"
                 >
-                  {{ $t("androidRemoteTS.code.webView.againGetWeb") }}
+                  {{ $t('androidRemoteTS.code.webView.againGetWeb') }}
                 </el-button>
                 <el-card
                   v-for="web in webViewListDetail"
@@ -3764,7 +3752,7 @@ const checkAlive = () => {
                       <div style="display: flex; align-items: center">
                         <img :src="getImg('chrome')" width="20" />
                         <strong style="margin-left: 10px"
-                        >{{ web["package"] }} ({{ web["version"] }})</strong
+                          >{{ web['package'] }} ({{ web['version'] }})</strong
                         >
                       </div>
                     </div>
@@ -3794,15 +3782,15 @@ const checkAlive = () => {
                             style="margin-right: 5px"
                           />
                           <strong>{{
-                              w.title.length > 0
-                                ? w.title
-                                : $t("androidRemoteTS.code.webView.Untitled")
-                            }}</strong>
+                            w.title.length > 0
+                              ? w.title
+                              : $t('androidRemoteTS.code.webView.Untitled')
+                          }}</strong>
                         </div>
                         <div style="color: #909399">
                           {{
                             w.url.length > 50
-                              ? w.url.substring(0, 50) + "..."
+                              ? w.url.substring(0, 50) + '...'
                               : w.url
                           }}
                         </div>
@@ -3820,7 +3808,7 @@ const checkAlive = () => {
                           )
                         "
                       >
-                        {{ $t("androidRemoteTS.code.webView.nowDebug") }}
+                        {{ $t('androidRemoteTS.code.webView.nowDebug') }}
                       </el-button>
                     </div>
                   </el-card>
@@ -3835,11 +3823,11 @@ const checkAlive = () => {
                 >
                   <template #title>
                     <span style="color: #606266">{{
-                        $t("androidRemoteTS.code.webView.return")
-                      }}</span>
+                      $t('androidRemoteTS.code.webView.return')
+                    }}</span>
                   </template>
                   <template #content>
-                    {{ $t("androidRemoteTS.code.webView.nowWeb") }}：<strong>{{
+                    {{ $t('androidRemoteTS.code.webView.nowWeb') }}：<strong>{{
                       title
                     }}</strong>
                   </template>
@@ -3868,7 +3856,10 @@ const checkAlive = () => {
             />
           </el-tab-pane>
           <!--录制坐标-->
-          <el-tab-pane :label="$t('androidRemoteTS.code.recordPoint')" name="recordAction">
+          <el-tab-pane
+            :label="$t('androidRemoteTS.code.recordPoint')"
+            name="recordAction"
+          >
             <div v-if="testCaseRecord['id']">
               <el-collapse accordion style="margin-bottom: 20px">
                 <el-collapse-item>
@@ -3887,20 +3878,20 @@ const checkAlive = () => {
                           color: #909399;
                           margin-left: 10px;
                         "
-                      >{{
-                          $t("androidRemoteTS.code.UIAutomation.testInfo")
+                        >{{
+                          $t('androidRemoteTS.code.UIAutomation.testInfo')
                         }}</strong
                       >
-<!--                      <strong-->
-<!--                        style="-->
-<!--                          font-size: 15px;-->
-<!--                          color: #909399;-->
-<!--                          margin-left: 10px;-->
-<!--                        "-->
-<!--                      >关联模块：{{-->
-<!--                          moduleRecord['name']-->
-<!--                        }}</strong-->
-<!--                      >-->
+                      <!--                      <strong-->
+                      <!--                        style="-->
+                      <!--                          font-size: 15px;-->
+                      <!--                          color: #909399;-->
+                      <!--                          margin-left: 10px;-->
+                      <!--                        "-->
+                      <!--                      >关联模块：{{-->
+                      <!--                          moduleRecord['name']-->
+                      <!--                        }}</strong-->
+                      <!--                      >-->
                       <!--录制相关动作,录制相关BUTTON-->
                       <div style="display: flex; margin-top: 10px">
                         <el-button
@@ -3910,14 +3901,14 @@ const checkAlive = () => {
                           :loading="startRecordFlag === true"
                           @click="startRecord"
                         >
-                          {{ $t("androidRemoteTS.code.startRecord") }}
+                          {{ $t('androidRemoteTS.code.startRecord') }}
                         </el-button>
                         <el-button
                           size="mini"
                           type="danger"
                           :disabled="startRecordFlag === false"
                           @click="endRecord"
-                        >{{ $t("androidRemoteTS.code.endRecord") }}
+                          >{{ $t('androidRemoteTS.code.endRecord') }}
                         </el-button>
                       </div>
 
@@ -3927,7 +3918,7 @@ const checkAlive = () => {
                         size="mini"
                         @click="removeCaseRecord"
                       >
-                        {{ $t("androidRemoteTS.code.UIAutomation.clean") }}
+                        {{ $t('androidRemoteTS.code.UIAutomation.clean') }}
                       </el-button>
                     </div>
                   </template>
@@ -3935,12 +3926,12 @@ const checkAlive = () => {
                     <el-descriptions-item
                       width="100px"
                       :label="$t('projectIndexTS.page.caseId')"
-                    >{{ testCaseRecord["id"] }}
+                      >{{ testCaseRecord['id'] }}
                     </el-descriptions-item>
                     <el-descriptions-item
                       width="100px"
                       :label="$t('projectIndexTS.page.caseName')"
-                    >{{ testCaseRecord.name }}
+                      >{{ testCaseRecord.name }}
                     </el-descriptions-item>
                     <el-descriptions-item
                       :label="
@@ -3958,7 +3949,7 @@ const checkAlive = () => {
                           "
                           shape="square"
                         ></el-avatar>
-                        {{ projectRecord["projectName"] }}
+                        {{ projectRecord['projectName'] }}
                       </div>
                     </el-descriptions-item>
                     <el-descriptions-item
@@ -3970,44 +3961,45 @@ const checkAlive = () => {
                           :size="27"
                           :src="
                             getImg(
-                              testCaseRecord['platform'] === 1 ? 'ANDROID' : 'IOS'
+                              testCaseRecord['platform'] === 1
+                                ? 'ANDROID'
+                                : 'IOS'
                             )
                           "
                           shape="square"
                         ></el-avatar>
                         {{
-                          testCaseRecord["platform"] === 1
-                            ? $t("publicStepTS.android")
-                            : "iOS"
+                          testCaseRecord['platform'] === 1
+                            ? $t('publicStepTS.android')
+                            : 'iOS'
                         }}
                       </div>
                     </el-descriptions-item>
                     <el-descriptions-item :label="$t('stepListViewTS.module')">
                       {{
-                        testCaseRecord["modulesDTO"] !== null
-                          ? testCaseRecord["modulesDTO"].name
-                          : ""
+                        testCaseRecord['modulesDTO'] !== null
+                          ? testCaseRecord['modulesDTO'].name
+                          : ''
                       }}
                     </el-descriptions-item>
                     <el-descriptions-item
                       :label="$t('stepListViewTS.versionName')"
-                    >{{ testCaseRecord["version"] }}
+                      >{{ testCaseRecord['version'] }}
                     </el-descriptions-item>
                     <el-descriptions-item :label="$t('stepListViewTS.designer')"
-                    >{{ testCaseRecord["designer"] }}
+                      >{{ testCaseRecord['designer'] }}
                     </el-descriptions-item>
                     <el-descriptions-item :label="$t('stepListViewTS.last')"
-                    >{{ testCaseRecord["editTime"] }}
+                      >{{ testCaseRecord['editTime'] }}
                     </el-descriptions-item>
                     <el-descriptions-item
                       :label="$t('stepListViewTS.testMessage')"
-                    >{{ testCaseRecord["des"] }}
+                      >{{ testCaseRecord['des'] }}
                     </el-descriptions-item>
                   </el-descriptions>
                 </el-collapse-item>
               </el-collapse>
               <el-card>
-
                 <el-tabs v-model="activeTab2Record" type="border-card" stretch>
                   <!--用例详情 -->
                   <el-tab-pane :label="$t('publicStepTS.list')" name="step">
@@ -4039,8 +4031,8 @@ const checkAlive = () => {
             </div>
             <div v-else>
               <span style="color: #909399; margin-right: 10px">{{
-                  $t("androidRemoteTS.code.associatedProject")
-                }}</span>
+                $t('androidRemoteTS.code.associatedProject')
+              }}</span>
               <el-select
                 v-model="projectRecord"
                 size="mini"
@@ -4065,35 +4057,35 @@ const checkAlive = () => {
                       "
                       shape="square"
                     ></el-avatar>
-                    {{ item["projectName"] }}
+                    {{ item['projectName'] }}
                   </div>
                 </el-option>
               </el-select>
               <!--              录制坐标 关联模块-->
-<!--              <span style="color: #909399; margin-right: 10px; margin-left: 10px">{{-->
-<!--                  $t("androidRemoteTS.code.associatedModule")-->
-<!--                }}</span>-->
-<!--              <el-select-->
-<!--                filterable-->
-<!--                v-model="moduleRecord"-->
-<!--                size="mini"-->
-<!--                value-key="id"-->
-<!--                :placeholder="$t('androidRemoteTS.code.chooseModule')"-->
-<!--              >-->
-<!--                <el-option-->
-<!--                  v-for="item in modules"-->
-<!--                  :key="item.id"-->
-<!--                  :value="item"-->
-<!--                  :label="item['name']"-->
-<!--                >-->
-<!--                  <div style="display: flex; align-items: center">-->
-<!--                    {{ item["name"] }}-->
-<!--                  </div>-->
-<!--                </el-option>-->
-<!--              </el-select>-->
+              <!--              <span style="color: #909399; margin-right: 10px; margin-left: 10px">{{-->
+              <!--                  $t("androidRemoteTS.code.associatedModule")-->
+              <!--                }}</span>-->
+              <!--              <el-select-->
+              <!--                filterable-->
+              <!--                v-model="moduleRecord"-->
+              <!--                size="mini"-->
+              <!--                value-key="id"-->
+              <!--                :placeholder="$t('androidRemoteTS.code.chooseModule')"-->
+              <!--              >-->
+              <!--                <el-option-->
+              <!--                  v-for="item in modules"-->
+              <!--                  :key="item.id"-->
+              <!--                  :value="item"-->
+              <!--                  :label="item['name']"-->
+              <!--                >-->
+              <!--                  <div style="display: flex; align-items: center">-->
+              <!--                    {{ item["name"] }}-->
+              <!--                  </div>-->
+              <!--                </el-option>-->
+              <!--              </el-select>-->
               <span style="color: #909399; margin-left: 10px">{{
-                  $t("androidRemoteTS.code.associatedProjectRecordHintText")
-                }}</span>
+                $t('androidRemoteTS.code.associatedProjectRecordHintText')
+              }}</span>
               <!--              录制坐标 新增用例-->
               <el-button
                 v-if="projectRecord !== null"
@@ -4103,7 +4095,7 @@ const checkAlive = () => {
                 style="position: absolute; right: 20px"
                 @click="caseListRecord.open()"
               >
-                {{ $t("androidRemoteTS.code.addCase") }}
+                {{ $t('androidRemoteTS.code.addCase') }}
               </el-button>
               <test-case-list
                 v-if="projectRecord !== null"
@@ -4122,7 +4114,6 @@ const checkAlive = () => {
                 </el-result>
               </el-card>
             </div>
-
           </el-tab-pane>
           <!--          原控件元素 现在的 录制元素-->
           <el-tab-pane :label="$t('routes.recordElement')" name="ele">
@@ -4144,43 +4135,53 @@ const checkAlive = () => {
                           color: #909399;
                           margin-left: 10px;
                         "
-                      >{{
-                          $t("androidRemoteTS.code.UIAutomation.testInfo")
+                        >{{
+                          $t('androidRemoteTS.code.UIAutomation.testInfo')
                         }}</strong
                       >
-<!--                      <strong-->
-<!--                        style="-->
-<!--                          font-size: 15px;-->
-<!--                          color: #909399;-->
-<!--                          margin-left: 10px;-->
-<!--                        "-->
-<!--                      >关联项目：{{-->
-<!--                          projectRecordEle['projectName']-->
-<!--                        }}</strong-->
-<!--                      >-->
-<!--                      <strong-->
-<!--                        style="-->
-<!--                          font-size: 15px;-->
-<!--                          color: #909399;-->
-<!--                          margin-left: 10px;-->
-<!--                        "-->
-<!--                      >关联模块：{{-->
-<!--                          moduleRecordEle['name']-->
-<!--                        }}</strong-->
-<!--                      >-->
+                      <!--                      <strong-->
+                      <!--                        style="-->
+                      <!--                          font-size: 15px;-->
+                      <!--                          color: #909399;-->
+                      <!--                          margin-left: 10px;-->
+                      <!--                        "-->
+                      <!--                      >关联项目：{{-->
+                      <!--                          projectRecordEle['projectName']-->
+                      <!--                        }}</strong-->
+                      <!--                      >-->
+                      <!--                      <strong-->
+                      <!--                        style="-->
+                      <!--                          font-size: 15px;-->
+                      <!--                          color: #909399;-->
+                      <!--                          margin-left: 10px;-->
+                      <!--                        "-->
+                      <!--                      >关联模块：{{-->
+                      <!--                          moduleRecordEle['name']-->
+                      <!--                        }}</strong-->
+                      <!--                      >-->
                       <!--录制相关动作,录制相关BUTTON-->
-                      <div style="display: flex; margin-top: 10px;margin-bottom: 10px">
-                        <el-radio-group v-model="recordEleType" @change="endRecordEle"
-                                        style="margin-top: 10px;margin-left: 10px"
+                      <div
+                        style="
+                          display: flex;
+                          margin-top: 10px;
+                          margin-bottom: 10px;
+                        "
+                      >
+                        <el-radio-group
+                          v-model="recordEleType"
+                          style="margin-top: 10px; margin-left: 10px"
+                          @change="endRecordEle"
                         >
                           <el-radio label="0">
-                            {{ $t("androidRemoteTS.code.recordTypeDisable") }}
+                            {{ $t('androidRemoteTS.code.recordTypeDisable') }}
                           </el-radio>
                           <el-radio label="1">
-                            {{ $t("androidRemoteTS.code.recordTypeAuto") }}
+                            {{ $t('androidRemoteTS.code.recordTypeAuto') }}
                           </el-radio>
                           <el-radio label="2">
-                            {{ $t("androidRemoteTS.code.recordTypeWithChoose") }}
+                            {{
+                              $t('androidRemoteTS.code.recordTypeWithChoose')
+                            }}
                           </el-radio>
                         </el-radio-group>
                         <!--                        <el-button
@@ -4199,21 +4200,20 @@ const checkAlive = () => {
                                                   @click="endRecordEle"
                                                 >{{ $t("androidRemoteTS.code.endRecord") }}
                                                 </el-button>-->
-
                       </div>
-<!--                      <el-button-->
-<!--                        size="mini"-->
-<!--                        type="danger"-->
-<!--                        @click="endRecordEle"-->
-<!--                      >{{ $t("androidRemoteTS.code.endRecord") }}-->
-<!--                      </el-button>-->
+                      <!--                      <el-button-->
+                      <!--                        size="mini"-->
+                      <!--                        type="danger"-->
+                      <!--                        @click="endRecordEle"-->
+                      <!--                      >{{ $t("androidRemoteTS.code.endRecord") }}-->
+                      <!--                      </el-button>-->
                       <el-button
                         style="margin-right: 10px"
                         type="danger"
                         size="mini"
                         @click="removeCaseRecordEle"
                       >
-                        {{ $t("androidRemoteTS.code.UIAutomation.clean") }}
+                        {{ $t('androidRemoteTS.code.UIAutomation.clean') }}
                       </el-button>
                     </div>
                   </template>
@@ -4221,12 +4221,12 @@ const checkAlive = () => {
                     <el-descriptions-item
                       width="100px"
                       :label="$t('projectIndexTS.page.caseId')"
-                    >{{ testCaseRecordEle["id"] }}
+                      >{{ testCaseRecordEle['id'] }}
                     </el-descriptions-item>
                     <el-descriptions-item
                       width="100px"
                       :label="$t('projectIndexTS.page.caseName')"
-                    >{{ testCaseRecordEle.name }}
+                      >{{ testCaseRecordEle.name }}
                     </el-descriptions-item>
                     <el-descriptions-item
                       :label="
@@ -4244,7 +4244,7 @@ const checkAlive = () => {
                           "
                           shape="square"
                         ></el-avatar>
-                        {{ projectRecordEle["projectName"] }}
+                        {{ projectRecordEle['projectName'] }}
                       </div>
                     </el-descriptions-item>
                     <el-descriptions-item
@@ -4256,38 +4256,40 @@ const checkAlive = () => {
                           :size="27"
                           :src="
                             getImg(
-                              testCaseRecordEle['platform'] === 1 ? 'ANDROID' : 'IOS'
+                              testCaseRecordEle['platform'] === 1
+                                ? 'ANDROID'
+                                : 'IOS'
                             )
                           "
                           shape="square"
                         ></el-avatar>
                         {{
-                          testCaseRecordEle["platform"] === 1
-                            ? $t("publicStepTS.android")
-                            : "iOS"
+                          testCaseRecordEle['platform'] === 1
+                            ? $t('publicStepTS.android')
+                            : 'iOS'
                         }}
                       </div>
                     </el-descriptions-item>
                     <el-descriptions-item :label="$t('stepListViewTS.module')">
                       {{
-                        testCaseRecordEle["modulesDTO"] !== null
-                          ? testCaseRecordEle["modulesDTO"].name
-                          : ""
+                        testCaseRecordEle['modulesDTO'] !== null
+                          ? testCaseRecordEle['modulesDTO'].name
+                          : ''
                       }}
                     </el-descriptions-item>
                     <el-descriptions-item
                       :label="$t('stepListViewTS.versionName')"
-                    >{{ testCaseRecordEle["version"] }}
+                      >{{ testCaseRecordEle['version'] }}
                     </el-descriptions-item>
                     <el-descriptions-item :label="$t('stepListViewTS.designer')"
-                    >{{ testCaseRecordEle["designer"] }}
+                      >{{ testCaseRecordEle['designer'] }}
                     </el-descriptions-item>
                     <el-descriptions-item :label="$t('stepListViewTS.last')"
-                    >{{ testCaseRecordEle["editTime"] }}
+                      >{{ testCaseRecordEle['editTime'] }}
                     </el-descriptions-item>
                     <el-descriptions-item
                       :label="$t('stepListViewTS.testMessage')"
-                    >{{ testCaseRecordEle["des"] }}
+                      >{{ testCaseRecordEle['des'] }}
                     </el-descriptions-item>
                   </el-descriptions>
                 </el-collapse-item>
@@ -4323,10 +4325,10 @@ const checkAlive = () => {
                             </el-card>-->
             </div>
             <!--            控件元素 关联项目 关联用例 -->
-            <div v-else style=" margin-bottom: 10px">
+            <div v-else style="margin-bottom: 10px">
               <span style="color: #909399; margin-right: 10px">{{
-                  $t("androidRemoteTS.code.associatedProject")
-                }}</span>
+                $t('androidRemoteTS.code.associatedProject')
+              }}</span>
               <el-select
                 v-model="projectRecordEle"
                 size="mini"
@@ -4351,35 +4353,35 @@ const checkAlive = () => {
                       "
                       shape="square"
                     ></el-avatar>
-                    {{ item["projectName"] }}
+                    {{ item['projectName'] }}
                   </div>
                 </el-option>
               </el-select>
               <!--              关联模块-->
-<!--              <span style="color: #909399; margin-right: 10px; margin-left: 10px">{{-->
-<!--                  $t("androidRemoteTS.code.associatedModule")-->
-<!--                }}</span>-->
-<!--              <el-select-->
-<!--                filterable-->
-<!--                v-model="moduleRecordEle"-->
-<!--                size="mini"-->
-<!--                value-key="id"-->
-<!--                :placeholder="$t('androidRemoteTS.code.chooseModule')"-->
-<!--              >-->
-<!--                <el-option-->
-<!--                  v-for="item in modules"-->
-<!--                  :key="item.id"-->
-<!--                  :value="item"-->
-<!--                  :label="item['name']"-->
-<!--                >-->
-<!--                  <div style="display: flex; align-items: center">-->
-<!--                    {{ item["name"] }}-->
-<!--                  </div>-->
-<!--                </el-option>-->
-<!--              </el-select>-->
+              <!--              <span style="color: #909399; margin-right: 10px; margin-left: 10px">{{-->
+              <!--                  $t("androidRemoteTS.code.associatedModule")-->
+              <!--                }}</span>-->
+              <!--              <el-select-->
+              <!--                filterable-->
+              <!--                v-model="moduleRecordEle"-->
+              <!--                size="mini"-->
+              <!--                value-key="id"-->
+              <!--                :placeholder="$t('androidRemoteTS.code.chooseModule')"-->
+              <!--              >-->
+              <!--                <el-option-->
+              <!--                  v-for="item in modules"-->
+              <!--                  :key="item.id"-->
+              <!--                  :value="item"-->
+              <!--                  :label="item['name']"-->
+              <!--                >-->
+              <!--                  <div style="display: flex; align-items: center">-->
+              <!--                    {{ item["name"] }}-->
+              <!--                  </div>-->
+              <!--                </el-option>-->
+              <!--              </el-select>-->
               <span style="color: #909399; margin-left: 10px">{{
-                  $t("androidRemoteTS.code.associatedProjectRecordHintText")
-                }}</span>
+                $t('androidRemoteTS.code.associatedProjectRecordHintText')
+              }}</span>
               <!--              新增用例-->
               <el-button
                 v-if="projectRecordEle !== null"
@@ -4389,7 +4391,7 @@ const checkAlive = () => {
                 style="position: absolute; right: 20px"
                 @click="caseListRecordEle.open()"
               >
-                {{ $t("androidRemoteTS.code.addCase") }}
+                {{ $t('androidRemoteTS.code.addCase') }}
               </el-button>
               <test-case-list
                 v-if="projectRecordEle !== null"
@@ -4467,7 +4469,7 @@ const checkAlive = () => {
                         <el-icon :size="12" style="vertical-align: middle">
                           <Search />
                         </el-icon>
-                        {{ $t("androidRemoteTS.code.retrieveControlEle") }}
+                        {{ $t('androidRemoteTS.code.retrieveControlEle') }}
                       </el-button>
                     </div>
                     <!--                    当前activity-->
@@ -4480,7 +4482,7 @@ const checkAlive = () => {
                         cursor: pointer;
                       "
                       @click="copy(activity)"
-                    >{{ $t("androidRemoteTS.code.activity") }}：
+                      >{{ $t('androidRemoteTS.code.activity') }}：
                       {{ activity }}</span
                     >
                   </div>
@@ -4559,17 +4561,17 @@ const checkAlive = () => {
                                   {{
                                     node.label.substring(
                                       0,
-                                      node.label.indexOf(">")
-                                    ) + " "
+                                      node.label.indexOf('>')
+                                    ) + ' '
                                   }}
                                   <span style="color: #f55781">resource-id</span
                                   >={{
-                                    "\"" + data.detail["resource-id"] + "\">"
+                                    '"' + data.detail['resource-id'] + '">'
                                   }}
                                 </span>
                                 <span v-else style="font-size: 14px">{{
-                                    node.label
-                                  }}</span>
+                                  node.label
+                                }}</span>
                               </template>
                             </el-tree>
                           </el-scrollbar>
@@ -4590,7 +4592,7 @@ const checkAlive = () => {
                               type="primary"
                               round
                               @click="toAddElement('', '')"
-                            >{{ $t("androidRemoteTS.code.addControls") }}
+                              >{{ $t('androidRemoteTS.code.addControls') }}
                             </el-button>
                             <el-button
                               v-if="
@@ -4604,7 +4606,7 @@ const checkAlive = () => {
                               size="small"
                               round
                               @click="getEleScreen(elementDetail['xpath'])"
-                            >{{ $t("androidRemoteTS.code.controlSnapshot") }}
+                              >{{ $t('androidRemoteTS.code.controlSnapshot') }}
                             </el-button>
                           </div>
                           <div v-else>
@@ -4623,6 +4625,7 @@ const checkAlive = () => {
                               :placeholder="
                                 $t('androidRemoteTS.code.chooseProject')
                               "
+                              @change="getElement"
                             >
                               <el-option
                                 v-for="item in store.state.projectList"
@@ -4641,7 +4644,7 @@ const checkAlive = () => {
                                     "
                                     shape="square"
                                   ></el-avatar>
-                                  {{ item["projectName"] }}
+                                  {{ item['projectName'] }}
                                 </div>
                               </el-option>
                             </el-select>
@@ -4661,7 +4664,7 @@ const checkAlive = () => {
                                 style="cursor: pointer"
                                 @click="copy(elementDetail['class'])"
                               >
-                                <span>{{ elementDetail["class"] }}</span>
+                                <span>{{ elementDetail['class'] }}</span>
                               </el-form-item>
                               <!--                              resource-id-->
                               <el-form-item
@@ -4671,7 +4674,7 @@ const checkAlive = () => {
                               >
                                 <span
                                   @click="copy(elementDetail['resource-id'])"
-                                >{{ elementDetail["resource-id"] }}</span
+                                  >{{ elementDetail['resource-id'] }}</span
                                 >
                                 <el-icon
                                   color="green"
@@ -4727,7 +4730,7 @@ const checkAlive = () => {
                                       <span
                                         style="cursor: pointer"
                                         @click="copy(scope.row)"
-                                      >{{ scope.row }}</span
+                                        >{{ scope.row }}</span
                                       >
                                       <el-icon
                                         color="green"
@@ -4771,8 +4774,8 @@ const checkAlive = () => {
                                 style="cursor: pointer"
                               >
                                 <span @click="copy(elementDetail['xpath'])">{{
-                                    elementDetail["xpath"]
-                                  }}</span>
+                                  elementDetail['xpath']
+                                }}</span>
                                 <el-icon
                                   color="green"
                                   size="16"
@@ -4814,7 +4817,7 @@ const checkAlive = () => {
                                 style="cursor: pointer"
                                 @click="copy(elementDetail['text'])"
                               >
-                                <span>{{ elementDetail["text"] }}</span>
+                                <span>{{ elementDetail['text'] }}</span>
                               </el-form-item>
                               <el-form-item
                                 v-if="elementDetail['content-desc']"
@@ -4823,7 +4826,7 @@ const checkAlive = () => {
                               >
                                 <span
                                   @click="copy(elementDetail['content-desc'])"
-                                >{{ elementDetail["content-desc"] }}</span
+                                  >{{ elementDetail['content-desc'] }}</span
                                 >
                                 <el-icon
                                   color="green"
@@ -4866,7 +4869,7 @@ const checkAlive = () => {
                                 style="cursor: pointer"
                                 @click="copy(elementDetail['package'])"
                               >
-                                <span>{{ elementDetail["package"] }}</span>
+                                <span>{{ elementDetail['package'] }}</span>
                               </el-form-item>
                               <el-form-item
                                 :label="$t('androidRemoteTS.code.centerXY')"
@@ -4881,10 +4884,10 @@ const checkAlive = () => {
                                       )
                                     )
                                   "
-                                >{{
+                                  >{{
                                     computedCenter(
-                                      elementDetail["bStart"],
-                                      elementDetail["bEnd"]
+                                      elementDetail['bStart'],
+                                      elementDetail['bEnd']
                                     )
                                   }}</span
                                 >
@@ -4933,7 +4936,7 @@ const checkAlive = () => {
                                 </el-icon>
                               </el-form-item>
                               <el-form-item label="index">
-                                <span>{{ elementDetail["index"] }}</span>
+                                <span>{{ elementDetail['index'] }}</span>
                               </el-form-item>
                               <el-form-item
                                 :label="
@@ -5058,7 +5061,7 @@ const checkAlive = () => {
                                 </el-switch>
                               </el-form-item>
                               <el-form-item label="Bounds">
-                                <span>{{ elementDetail["bounds"] }}</span>
+                                <span>{{ elementDetail['bounds'] }}</span>
                               </el-form-item>
                             </el-form>
                           </el-scrollbar>
@@ -5080,7 +5083,7 @@ const checkAlive = () => {
                         :disabled="isDriverFinish"
                         :loading="driverLoading"
                         @click="openDriver"
-                      >{{ $t("androidRemoteTS.code.UIAutomator2ServerInit") }}
+                        >{{ $t('androidRemoteTS.code.UIAutomator2ServerInit') }}
                       </el-button>
                       <el-button
                         type="primary"
@@ -5092,7 +5095,7 @@ const checkAlive = () => {
                         <el-icon :size="12" style="vertical-align: middle">
                           <Search />
                         </el-icon>
-                        {{ $t("androidRemoteTS.code.getEle") }}
+                        {{ $t('androidRemoteTS.code.getEle') }}
                       </el-button>
                     </template>
                   </el-result>
@@ -5115,7 +5118,11 @@ const checkAlive = () => {
             <div v-if="testCaseRecordEle['id']">
               <el-card>
                 <!--用例详情 -->
-                <el-tabs v-model="activeTab2RecordEle" type="border-card" stretch>
+                <el-tabs
+                  v-model="activeTab2RecordEle"
+                  type="border-card"
+                  stretch
+                >
                   <el-tab-pane :label="$t('publicStepTS.list')" name="step">
                     <step-list
                       :key="flushStep"
