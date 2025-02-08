@@ -1254,7 +1254,7 @@ const touchstart = async (event) => {
       findMinSize(findElementByPoint(elementData.value, x, y))
     );
   });
-  console.error(tree.value.getCurrentNode());
+  // console.error(tree.value.getCurrentNode());
   await handleNodeClick(tree.value.getCurrentNode());
 };
 const findMinSize = (data) => {
@@ -1312,7 +1312,13 @@ const handleNodeClick = (data) => {
   // console.error(JSON.toString(data))
   // [{"type":"debug","detail":"checkLocation","element":"//android.widget.RelativeLayout[@text='']","eleType":"xpath","pwd":""}]
   handleNodeClick2(data);
-  if (recordEleType.value == 1 && data !== null) {
+  if (recordEleType.value == 1) {
+    if(data == null || data.detail.text == null || data.detail.text == ''){
+      ElMessage.error({
+        message: '未自动获取到元素，请手动录制，使用先选后录制 ',
+      });
+      return;
+    }
     const v = `//${data.detail.class}[@text='${data.detail.text}']`;
     //   异步执行 向后台传数据
     recordEleArr.value = [
@@ -1331,10 +1337,6 @@ const handleNodeClick = (data) => {
       eleValue: v,
     });
     // setTimeout(() => {  getElement() }, 3000);
-  } else {
-    ElMessage.error({
-      message: '未获取到元素',
-    });
   }
 };
 
@@ -1517,7 +1519,7 @@ const checkLocation = (data) => {
 };
 // 运行元素
 const checkLocation2 = (data) => {
-  console.error(data.eleValue);
+  // console.error(data.eleValue);
   const v = {
     type: 'debug',
     detail: 'checkLocation',
@@ -1777,7 +1779,7 @@ const startRecord = () => {
 const endRecord = () => {
   startRecordFlag.value = false;
   if (recordActions.value.length > 0) {
-    console.log(JSON.stringify(recordActions.value));
+    // console.log(JSON.stringify(recordActions.value));
     endRecordLoading.value = true;
     const para = {
       recordActions: recordActions.value,
@@ -1801,14 +1803,14 @@ const endRecord = () => {
     recordActions.value = [];
   }
 
-  console.error('flushStep.value {}', flushStep);
+  // console.error('flushStep.value {}', flushStep);
 };
 
 // recordActions 把用例的操作插入到坐标数组
 const insertRecordActions = (data) => {
   if (startRecordFlag.value) {
     recordActions.value.push(data);
-    console.log(JSON.stringify(recordActions.value));
+    // console.log(JSON.stringify(recordActions.value));
   }
 };
 
@@ -1820,7 +1822,7 @@ const startRecordEle = () => {
 // 结束录制元素
 const endRecordEle = () => {
   if (recordEleArr.value.length > 0) {
-    console.log(JSON.stringify(recordEleArr.value));
+    // console.log(JSON.stringify(recordEleArr.value));
     endRecordEleLoading.value = true;
     const para = {
       elements: recordEleArr.value,
@@ -1845,14 +1847,14 @@ const endRecordEle = () => {
     recordEleArr.value = [];
   }
 
-  console.error('flushStep.value {}', flushStep);
+  // console.error('flushStep.value {}', flushStep);
 };
 
 // recordActions 把用例的操作插入到坐标数组
 const insertRecordActionsEle = (data) => {
   if (startRecordEleFlag.value) {
     recordEleArr.value.push(data);
-    console.log(JSON.stringify(recordEleArr.value));
+    // console.log(JSON.stringify(recordEleArr.value));
   }
 };
 
