@@ -440,7 +440,7 @@ const findBestXpath = (elementDetail) => {
     );
   }
 
-  console.error('elementDetail.text>> ', elementDetail.text)
+  // console.error('elementDetail.text>> ', elementDetail.text)
   if (elementDetail.text && elementDetail.text != '') {
     result.push(`//${elementDetail.class}[@text='${elementDetail.text}']`);
     result.push(
@@ -455,7 +455,7 @@ const findBestXpath = (elementDetail) => {
         `//${elementDetail.class}[contains(@content-desc,'${elementDetail['content-desc']}')]`
     );
   }
-  console.error('result>>> ', JSON.stringify(result))
+  // console.error('result>>> ', JSON.stringify(result))
   return result;
 };
 const downloadImg = (url) => {
@@ -877,7 +877,7 @@ const websocketOnmessage = (message) => {
       // });
 
       const result = JSON.parse(message.data);
-      console.error("result>>>>> ", JSON.stringify(result))
+      // console.error("result>>>>> ", JSON.stringify(result))
       currentId.value = [1];
       elementData.value = result.detail;
       isShowTree.value = true;
@@ -1261,7 +1261,7 @@ const touchstart = async (event) => {
         findMinSize(findElementByPoint(elementData.value, x, y))
     );
   });
-  console.error('tree.value.getCurrentNode()>> ', tree.value.getCurrentNode());
+  // console.error('tree.value.getCurrentNode()>> ', tree.value.getCurrentNode());
   await handleNodeClick(tree.value.getCurrentNode());
 };
 const findMinSize = (data) => {
@@ -1318,14 +1318,19 @@ const findElementByPoint = (ele, x, y) => {
 const handleNodeClick = (data) => {
   // data: {"id":5,"label":"<android.widget.TextView>","detail":{"displayed":"true","bStart":"542,1240","package":"com.nucarf.member","checkable":"false","clickable":"true","index":"3","focusable":"true","resource-id":"com.nucarf.member:id/right_tv","enabled":"true","xpath":"/hierarchy/android.widget.FrameLayout/android.widget.TextView[4]","password":"false","bEnd":"972,1378","focused":"false","bounds":"[542,1240][972,1378]","checked":"false","long-clickable":"false","text":"继续填写","class":"android.widget.TextView","scrollable":"false","selected":"false"},"children":null}
   handleNodeClick2(data);
+  console.error("data>>>" ,JSON.stringify(data))
   if (recordEleType.value == 1) {
+    if(data.detail["resource-id"] == null){
+      // 如果用户点击的元素没有resource-id，可能是因为用户没有点击到正确的位置
+      ElMessage.error({
+        message: '未获取到元素的xpath, 请确认点击位置正确',
+      });
+      return;
+    }
     let v = `//${data.detail.class}[@text='${data.detail.text}']`;
     // text 里存储的是中文，不为空的时间，可以使用中文,
-    // 如果text为空，则使用resource-id, 两者都没有的还没有遇到过，如果遇到，则应该提示自动获取元素失败
+    // 如果text为空，则使用resource-id, 两者都没有的还没有遇到过
     if (data.detail.text == '') {
-      // ElMessage.error({
-      //   message: '未自动获取到元素，请手动录制，使用先选后录制 ',
-      // });
       v = `//${data.detail.class}[@resource-id='${data.detail["resource-id"]}']`;
     }
     //   异步执行 向后台传数据
@@ -1520,7 +1525,7 @@ const runStepRecordEle = () => {
 };
 // 给APP传指令，运行点击的动作，运行元素后 2秒后，触发 重新获取控件元素
 const checkLocation = (data) => {
-  console.error("data>>>", JSON.toString(data))
+  // console.error("data>>>", JSON.toString(data))
   checkLocation2(data);
   setTimeout(() => {
     getElement();
