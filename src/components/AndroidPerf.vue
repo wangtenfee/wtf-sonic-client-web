@@ -157,7 +157,7 @@ defineExpose({ setData });
     <android-perf-chart
       ref="androidPerfChart"
       :cid="0"
-      :rid="0"
+      rid="0"
       :did="0"
       :sys-cpu="sysCpu"
       :sys-mem="sysMem"

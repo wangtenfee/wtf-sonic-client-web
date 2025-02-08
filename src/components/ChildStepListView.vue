@@ -57,7 +57,7 @@ const props = defineProps({
               :active-value="0"
               :inactive-value="1"
               active-color="#67C23A"
-              width="30"
+              :width="30"
               size="large"
               disabled
             ></el-switch>
@@ -73,7 +73,7 @@ const props = defineProps({
             :active-value="0"
             :inactive-value="1"
             active-color="#67C23A"
-            width="30"
+            :width="30"
             size="large"
             disabled
           ></el-switch>

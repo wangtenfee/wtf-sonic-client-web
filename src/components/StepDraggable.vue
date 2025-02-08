@@ -200,7 +200,7 @@ const addStepTotarget = (id, toNext) => {
                   :active-value="0"
                   :inactive-value="1"
                   active-color="#67C23A"
-                  width="30"
+                  :width="30"
                   size="large"
                   @change="switchStep(s.id, $event)"
                 ></el-switch>
@@ -296,7 +296,7 @@ const addStepTotarget = (id, toNext) => {
                 :active-value="0"
                 :inactive-value="1"
                 active-color="#67C23A"
-                width="30"
+                :width="30"
                 size="large"
                 @change="switchStep(s.id, $event)"
               ></el-switch>

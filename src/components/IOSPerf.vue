@@ -145,7 +145,7 @@ defineExpose({ setData });
     <i-o-s-perf-chart
       ref="iosPerfChart"
       :cid="0"
-      :rid="0"
+      rid="0"
       :did="0"
       :cpu="cpu"
       :mem="mem"

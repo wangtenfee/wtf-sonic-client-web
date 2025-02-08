@@ -4678,7 +4678,7 @@ const checkAlive = () => {
                                 >
                                 <el-icon
                                   color="green"
-                                  size="16"
+                                  :size="16"
                                   style="
                                     vertical-align: middle;
                                     margin-left: 10px;
@@ -4696,7 +4696,7 @@ const checkAlive = () => {
                                 <el-icon
                                   v-if="project && project['id']"
                                   color="green"
-                                  size="16"
+                                  :size="16"
                                   style="
                                     vertical-align: middle;
                                     margin-left: 10px;
@@ -4734,7 +4734,7 @@ const checkAlive = () => {
                                       >
                                       <el-icon
                                         color="green"
-                                        size="16"
+                                        :size="16"
                                         style="
                                           vertical-align: middle;
                                           margin-left: 10px;
@@ -4752,7 +4752,7 @@ const checkAlive = () => {
                                       <el-icon
                                         v-if="project && project['id']"
                                         color="green"
-                                        size="16"
+                                        :size="16"
                                         style="
                                           vertical-align: middle;
                                           margin-left: 10px;
@@ -4778,7 +4778,7 @@ const checkAlive = () => {
                                 }}</span>
                                 <el-icon
                                   color="green"
-                                  size="16"
+                                  :size="16"
                                   style="
                                     vertical-align: middle;
                                     margin-left: 10px;
@@ -4796,7 +4796,7 @@ const checkAlive = () => {
                                 <el-icon
                                   v-if="project && project['id']"
                                   color="green"
-                                  size="16"
+                                  :size="16"
                                   style="
                                     vertical-align: middle;
                                     margin-left: 10px;
@@ -4830,7 +4830,7 @@ const checkAlive = () => {
                                 >
                                 <el-icon
                                   color="green"
-                                  size="16"
+                                  :size="16"
                                   style="
                                     vertical-align: middle;
                                     margin-left: 10px;
@@ -4848,7 +4848,7 @@ const checkAlive = () => {
                                 <el-icon
                                   v-if="project && project['id']"
                                   color="green"
-                                  size="16"
+                                  :size="16"
                                   style="
                                     vertical-align: middle;
                                     margin-left: 10px;
@@ -4893,7 +4893,7 @@ const checkAlive = () => {
                                 >
                                 <el-icon
                                   color="green"
-                                  size="16"
+                                  :size="16"
                                   style="
                                     vertical-align: middle;
                                     margin-left: 10px;
@@ -4916,7 +4916,7 @@ const checkAlive = () => {
                                 <el-icon
                                   v-if="project && project['id']"
                                   color="green"
-                                  size="16"
+                                  :size="16"
                                   style="
                                     vertical-align: middle;
                                     margin-left: 10px;
