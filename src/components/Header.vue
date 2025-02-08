@@ -119,9 +119,13 @@ const jump = (project) => {
   });
 };
 const pushIndex = (path) => {
-  router.push({
-    path,
+  // router.push({
+  //   path,
+  // });
+  let routeData = router.resolve({
+    path: `${path}`,
   });
+  window.open(routeData.href, '_blank');
 };
 const logout = () => {
   store.commit('clearAuth');
@@ -228,6 +232,7 @@ const changeLocaleHandler = function (val) {
           class="el-menu-horizontal-demo font"
           :default-active="route.path"
         >
+          <!--设备中心-->
           <el-menu-item
             index="/Index/Devices"
             @click="pushIndex('/Index/Devices')"
@@ -240,6 +245,7 @@ const changeLocaleHandler = function (val) {
             </el-icon>
             {{ $t('layout.deviceCenter') }}
           </el-menu-item>
+          <!--回到首页-->
           <el-menu-item
             v-if="
               route.params.projectId ||
