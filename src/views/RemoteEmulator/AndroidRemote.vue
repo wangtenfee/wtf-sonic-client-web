@@ -1320,7 +1320,7 @@ const handleNodeClick = (data) => {
   handleNodeClick2(data);
   console.error("data>>>" ,JSON.stringify(data))
   if (recordEleType.value == 1) {
-    if(data.detail["resource-id"] == null){
+    if(data.detail["resource-id"] == null &&  data.detail.text == null){
       // 如果用户点击的元素没有resource-id，可能是因为用户没有点击到正确的位置
       ElMessage.error({
         message: '未获取到元素的xpath, 请确认点击位置正确',
